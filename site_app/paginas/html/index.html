@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title_html %}
+  <title>Rastreabilidade de carne</title>
+{% endblock %}
+
+{% block img_page %}
+  <img src="{% static 'img/track.jpg' %}" class="img-home" alt="Qrcodes"/>
+{% endblock %}
+
+{% block form_content %}
+  <div class="align-items-center">
+    <h1 class="title-home">Rastreabilidade de Carne</h1>
+    <hr class="hr-home">
+  </div>
+  <div class="row">
+    <div class="col-md-4">
+      <button class="btn btn-lg btn-block btn-home" data-toggle="modal" data-target="#modal-fazenda">
+        FAZENDA
+      </button>
+    </div>
+    <br>
+    <div class="col-md-4">
+      <button class="btn btn-lg btn-block  btn-home" data-toggle="modal" data-target="#modal-frigorifico">
+        FRIGORÍFICO
+      </button>
+    </div>
+    <br>
+    <div class="col-md-4">
+      <button class="btn btn-lg btn-block btn-home" data-toggle="modal" data-target="#modal-cliente">
+        CLIENTE
+      </button>
+    </div>
+  </div>
+{% endblock %}
+
+{% block modal_content %}
+  <!-- Modal -->
+  <div class="modal fade" id="modal-fazenda" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title">Fazenda</h3>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="container" style="text-align: center;">
+            <div class="row">
+              <div class="col-md-12" style="text-align: center;">
+                <button type="button" id="reg_fazenda" class="btn btn-primary">Registrar fazenda</button>
+              </div>
+            </div>
+            <br>
+            <div class="row">
+              <div class="col-md-6">
+                <button type="button" id="reg_animal" class="btn btn-primary">Cadastrar animal</button>
+              </div>
+              <div class="col-md-6">
+                <button type="button" id="reg_vacina" class="btn btn-primary">Cadastrar vacina</button>
+              </div>
+            </div>
+            <br>
+            <div class="row">
+              <div class="col-md-6">
+                <button type="button" id="reg_terminacao" class="btn btn-primary">Cadastrar terminação</button>
+              </div>
+              <div class="col-md-6">
+                <button type="button" id="reg_venda" class="btn btn-primary">Cadastrar venda</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Modal -->
+  <div class="modal fade" id="modal-frigorifico" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title">Frigorífico</h3>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="container" style="text-align: center;">
+            <div class="row">
+              <div class="col-md-12" style="text-align: center;">
+                <button type="button" id="reg_frigorifico" class="btn btn-primary">Registrar frigorífico</button>
+              </div>
+            </div>
+            <br>
+            <div class="row">
+              <div class="col-md-6">
+                <button type="button" id="reg_abate" class="btn btn-primary">Cadastrar abate</button>
+              </div>
+              <div class="col-md-6">
+                <button type="button" id="reg_qualidade" class="btn btn-primary">Cadastrar qualidade</button>
+              </div>
+            </div>
+            <br>
+            <div class="row">
+              <div class="col-md-6">
+                <button type="button" id="reg_embalagem" class="btn btn-primary">Cadastrar embalagem</button>
+              </div>
+              <div class="col-md-6">
+                <button type="button" id="reg_comercializacao" class="btn btn-primary">Comercialização</button>
+              </div>
+            </div>
+            <br>
+            <div class="row">
+              <div class="col-md-12" style="text-align: center;">
+                <button type="button" id="imprime_qrcodes" class="btn btn-primary">Imprimir QR-Codes</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Modal -->
+  <div class="modal fade" id="modal-cliente" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title">Cliente</h3>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="container">
+            <div class="row">
+              <div class="col-md-6">
+                <input type="number" class="form-control" id="id_embalagem" min="1" step=1 onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" placeholder="ID da embalagem" required/>
+              </div>
+              <div class="col-md-6">
+                <button type="button" id="ver_embalagem" class="btn btn-primary">Pesquisar embalagem</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block scripts_js %}
+  <script type="text/javascript" src="{% static 'js/index.js' %}"></script>
+{% endblock %}

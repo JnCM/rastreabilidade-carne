@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title_html %}
+    <title>Cadastrar Venda</title>
+{% endblock %}
+
+{% block img_page %}
+    <img src="{% static 'img/venda.jpg' %}" class="img-home" alt="Venda"/>
+{% endblock %}
+
+{% block form_content %}
+    <form id="form_venda" name="form_venda" action="/salvar_venda" enctype="multipart/form-data" method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="frigorifico" style="color: red;">*</label>
+            <label class="modal-title" for="frigorifico">Frigorífico</label>
+            <i class="fa fa-question-circle" aria-hidden="true" title="✅: Validado na blockchain / ❌: Não validado na blockchain"></i>
+            <select id="frigorifico" name="frigorifico" class="form-control" required>
+                <option value="" selected>-- Selecione um frigorífico --</option>
+                {% for frigorifico in frigorificos %}
+                    <option value="{{ frigorifico.id_frigorifico }}">{% if frigorifico.check_blockchain %}✅ - {{ frigorifico.nome_frigorifico }}{% else %}❌ - {{ frigorifico.nome_frigorifico }}{% endif %}</option>
+                {% endfor %}
+            </select>
+            <input type="hidden" class="form-control" id="lista_vendas" name="lista_vendas" required/>
+        </div>
+        <div class="form-group">
+            <label for="data_venda" style="color: red;">*</label>
+            <label class="modal-title" for="data_venda">Data da venda</label>
+            <input type="date" class="form-control" id="data_venda" name="data_venda" placeholder="Digite a data de realização da venda" required/>
+        </div>
+        <div class="form-group" style="text-align: center;">
+            <button type="button" id="add_animal" class="btn btn-primary" data-toggle="modal" data-target="#modal-venda" disabled>+ Adicionar animal</button>
+        </div>
+        <div class="form-group">
+            <table id="tabela_vendas" class="table table-hover">
+                <thead>
+                    <th class="th th-table" scope="col" style="vertical-align: middle;">Ani&shy;mal</th>
+                    <th class="th th-table" scope="col" style="vertical-align: middle;">Peso final (kg)</th>
+                    <th class="th th-table" scope="col" style="vertical-align: middle;">ITU míni&shy;mo</th>
+                    <th class="th th-table" scope="col" style="vertical-align: middle;">ITU mé&shy;dio</th>
+                    <th class="th th-table" scope="col" style="vertical-align: middle;">ITU máxi&shy;mo</th>
+                    <th></th>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="4">Não há animais inseridos.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div style="text-align: center;">
+            <button type="button" id="salvar" class="btn btn-success">Salvar</button>
+            <button type="button" id="voltar" class="btn btn-danger">Voltar</button>
+        </div>
+    </form>
+{% endblock %}
+
+{% block modal_content %}
+    <!-- Modal -->
+    <div class="modal fade" id="modal-venda" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Adicionar novo animal</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="container">
+                        <div class="form-group">
+                            <label for="animal" style="color: red;">*</label>
+                            <label class="modal-title" for="animal">Animal</label>
+                            <i class="fa fa-question-circle" aria-hidden="true" title="✅: Validado na blockchain / ❌: Não validado na blockchain"></i>
+                            <select id="animal" name="animal" class="form-control" required>
+                                <option value="" selected>-- Selecione um animal --</option>
+                                {% for animal in animais %}
+                                <option value="{{ animal.id_animal }}">{% if animal.check_blockchain %}✅ - {{ animal.id_animal }}: {{ animal.raca }} / {% if animal.genero == "M" %}Macho{%else%}Fêmea{% endif %}{% else %}❌ - {{ animal.id_animal }}: {{ animal.raca }} / {% if animal.genero == "M" %}Macho{%else%}Fêmea{% endif %}{% endif %}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="peso_final" style="color: red;">*</label>
+                            <label class="modal-title" for="peso_final">Peso final (kg)</label>
+                            <input type="number" class="form-control" id="peso_final" name="peso_final" min="1" step=0.01 onkeypress="return (event.charCode !=8 && event.charCode ==0 || ( event.charCode == 44 || (event.charCode >= 48 && event.charCode <= 57)))" placeholder="Digite o peso do animal" required/>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label for="itu_min" style="color: red;">*</label>
+                                <label class="modal-title" for="itu_min">ITU mínimo</label>
+                                <input type="number" class="form-control" id="itu_min" name="itu_min" min="0" step=0.01 onkeypress="return (event.charCode !=8 && event.charCode ==0 || ( event.charCode == 44 || (event.charCode >= 48 && event.charCode <= 57)))" placeholder="Digite o ITU mínimo do animal" required disabled/>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="itu_medio" style="color: red;">*</label>
+                                <label class="modal-title" for="itu_medio">ITU médio</label>
+                                <input type="number" class="form-control" id="itu_medio" name="itu_medio" min="0" step=0.01 onkeypress="return (event.charCode !=8 && event.charCode ==0 || ( event.charCode == 44 || (event.charCode >= 48 && event.charCode <= 57)))" placeholder="Digite o ITU médio do animal" required disabled/>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="itu_max" style="color: red;">*</label>
+                                <label class="modal-title" for="itu_max">ITU máximo</label>
+                                <input type="number" class="form-control" id="itu_max" name="itu_max" min="0" step=0.01 onkeypress="return (event.charCode !=8 && event.charCode ==0 || ( event.charCode == 44 || (event.charCode >= 48 && event.charCode <= 57)))" placeholder="Digite o ITU máximo do animal" required disabled/>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="form-group">
+                            <label style="color: red;">*: Campos obrigatórios</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="add_venda" class="btn btn-success">Adicionar</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts_js %}
+  <script type="text/javascript" src="{% static 'js/cad_venda.js' %}"></script>
+{% endblock %}

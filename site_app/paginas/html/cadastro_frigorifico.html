@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title_html %}
+    <title>Cadastrar Frigorífico</title>
+{% endblock %}
+
+{% block img_page %}
+    <img src="{% static 'img/frigorifico.jpg' %}" class="img-home" alt="Frigorífico"/>
+{% endblock %}
+
+{% block form_content %}
+    <form id="form_frigorifico" name="form_frigorifico" action="/salvar_frigorifico" enctype="multipart/form-data" method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="nome_frigorifico" style="color: red;">*</label>
+            <label class="modal-title" for="nome_frigorifico">Nome do frigorífico</label>
+            <input type="text" class="form-control" id="nome_frigorifico" name="nome_frigorifico" placeholder="Digite o nome do frigorífico" required>
+        </div>
+        <div class="form-group">
+            <label for="localizacao_frigorifico" style="color: red;">*</label>
+            <label class="modal-title" for="localizacao_frigorifico">Localização</label>
+            <input type="text" class="form-control" id="localizacao_frigorifico" name="localizacao_frigorifico" placeholder="Digite a localização do frigorífico" required>
+        </div>
+        <div class="form-group">
+            <label for="cnpj" style="color: red;">*</label>
+            <label class="modal-title" for="cnpj">CNPJ</label>
+            <input type="text" class="form-control" id="cnpj" name="cnpj" placeholder="Digite o CNPJ do frigorífico" required>
+        </div>
+        <div class="form-group">
+            <label for="responsavel" style="color: red;">*</label>
+            <label class="modal-title" for="responsavel">Responsável</label>
+            <input type="text" class="form-control" id="responsavel" name="responsavel" placeholder="Digite o responsável pelo frigorífico" required>
+        </div>
+        <br>
+        <div class="form-group">
+            <label style="color: red;">*: Campos obrigatórios</label>
+        </div>
+        <button type="button" id="salvar" class="btn btn-success">Salvar</button>
+        <button type="button" id="voltar" class="btn btn-danger">Voltar</button>
+    </form>
+{% endblock %}
+
+{% block scripts_js %}
+    <script type="text/javascript" src="{% static 'js/cad_frigorifico.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title_html %}
+  <title>Cadastrar Animal</title>
+{% endblock %}
+
+{% block img_page %}
+  <img src="{% static 'img/animal.jpg' %}" class="img-home" alt="Animal"/>
+{% endblock %}
+
+{% block form_content %}
+  <form id="form_animal" name="form_animal" action="/salvar_animal" enctype="multipart/form-data" method="POST">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="fazenda" style="color: red;">*</label>
+        <label class="modal-title" for="fazenda">Fazenda de origem</label>
+        <i class="fa fa-question-circle" aria-hidden="true" title="✅: Validado na blockchain / ❌: Não validado na blockchain"></i>
+        <select id="fazenda" name="fazenda" class="form-control" required>
+            <option value="" selected>-- Selecione uma fazenda --</option>
+            {% for fazenda in fazendas %}
+                <option value="{{ fazenda.id_fazenda }}">{% if fazenda.check_blockchain %}✅ - {{ fazenda.nome_fazenda }}{% else %}❌ - {{ fazenda.nome_fazenda }}{% endif %}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="id_animal" style="color: red;">*</label>
+        <label class="modal-title" for="id_animal">Identificador do animal (Nº SISBOV)</label>
+        <input type="text" class="form-control" id="id_animal" name="id_animal" maxlength="15" placeholder="Digite o Nº SISBOV do animal" onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" required/>
+    </div>
+    <div class="form-group">
+        <label for="raca_animal" style="color: red;">*</label>
+        <label class="modal-title" for="raca_animal">Raça do animal</label>
+        <input type="text" class="form-control" id="raca_animal" name="raca_animal" placeholder="Digite a raça do animal" required/>
+    </div>
+    <div class="form-group">
+        <label for="" style="color: red;">*</label>
+        <label class="modal-title" for="">Selecione o gênero do animal:</label>
+    </div>
+    <div class="form-check">
+        <input class="form-check-input" type="radio" name="genero_animal" id="macho" value="M" required/>
+        <label class="form-check-label modal-title" for="macho">
+            Macho
+        </label>
+    </div>
+    <div class="form-check">
+        <input class="form-check-input" type="radio" name="genero_animal" id="femea" value="F"/>
+        <label class="form-check-label modal-title" for="femea">
+            Fêmea
+        </label>
+    </div>
+    <br>
+    <div class="form-group">
+        <label for="data_nascimento" style="color: red;">*</label>
+        <label class="modal-title" for="data_nascimento">Data de Nascimento</label>
+        <input type="date" class="form-control" id="data_nascimento" name="data_nascimento" placeholder="Digite a data de nascimento do animal" required/>
+    </div>
+    <div class="form-group">
+        <label for="peso_nascimento" style="color: red;">*</label>
+        <label class="modal-title" for="peso_nascimento">Peso ao Nascer (kg)</label>
+        <input type="number" class="form-control" id="peso_nascimento" name="peso_nascimento" min="1" step=0.01 onkeypress="return (event.charCode !=8 && event.charCode ==0 || ( event.charCode == 44 || (event.charCode >= 48 && event.charCode <= 57)))" placeholder="Digite o peso do animal ao nascer" required/>
+    </div>
+    <br>
+    <div class="form-group">
+        <label style="color: red;">*: Campos obrigatórios</label>
+    </div>
+    <button type="button" id="salvar" class="btn btn-success">Salvar</button>
+    <button type="button" id="voltar" class="btn btn-danger">Voltar</button>
+  </form>
+{% endblock %}
+
+{% block scripts_js %}
+  <script type="text/javascript" src="{% static 'js/cad_animal.js' %}"></script>
+{% endblock %}

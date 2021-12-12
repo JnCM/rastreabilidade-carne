@@ -1,0 +1,316 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+  <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        
+        <link rel="shortcut icon" type="image/x-icon" href="{% static 'img/logo_ufv.png' %}"/>
+        <link rel="stylesheet" href="{% static 'css/font-awesome-4.7.0/css/font-awesome.min.css' %}" media="screen"/>
+        <link rel="stylesheet" href="{% static 'css/bootstrap/bootstrap.css' %}" media="screen"/>
+        <link rel="stylesheet" href="{% static 'css/bootstrap5.0.2/bootstrap.min.css' %}" media="screen"/>
+        <link rel="stylesheet" href="{% static 'css/styles.css' %}" media="screen"/>
+        <title>Informação da carne</title>
+  </head>
+  <body style="background-color: darkseagreen;">
+        <div class="container-fluid">
+            <header style="background-color: honeydew;">
+                <!-- Navbar -->
+                <nav class="navbar navbar-expand-lg navbar-light">
+                  <a class="navbar-brand" href="https://www.ufv.br/campus-florestal/">
+                    <img src="{% static 'img/logo_ufv.png' %}" width="120" height="100" alt="Universidade Federal de Viçosa - Campus Florestal"/>
+                  </a>
+                  <a class="navbar-brand" href="https://github.com/lesc-ufv">
+                    <img src="{% static 'img/lesc.png' %}" width="120" height="100" alt="LESC - Laboratório de Engenharia de Sistemas de Computação"/>
+                  </a>
+                  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                      <span class="navbar-toggler-icon"></span>
+                  </button>
+                  <div class="collapse navbar-collapse" id="navbarNav">
+                      <ul class="navbar-nav ml-auto">
+                          <li class="nav-item">
+                            <a id="sobre" class="navbar-brand" href="https://www.ibm.com/br-pt/topics/what-is-blockchain" target="_blank">SOBRE</a>
+                          </li>
+                      </ul>
+                  </div>
+                </nav>
+                <!-- Navbar -->
+            </header>
+            
+            <br>
+
+            <main class="content">
+                {% if mensagem == 'OK' %}
+                    <div class="accordion" id="accordionExample">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingOne">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne" style="font-weight: bold;">
+                                    Informações sobre a carne
+                                </button>
+                            </h2>
+                            <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                                <div class="accordion-body">
+                                    <div class="container">
+                                        <div class="row justify-content-md-center">
+                                            {% if abate %}
+                                            <div class="col-md-4" style="text-align: center;">
+                                                <label class="modal-title" style="font-weight: bold;">Data que o animal foi abatido</label>
+                                                <input type="text" class="form-control" value="{{ abate.data_abate }}" readonly/>
+                                            </div>
+                                            {% endif %}
+                                            <div class="col-md-4" style="text-align: center;">
+                                                <label class="modal-title" style="font-weight: bold;">Temperatura média de armazenagem (&deg;C)</label>
+                                                <input type="text" class="form-control" value="{{ temperatura_media }}" readonly/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingTwo">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo" style="font-weight: bold;">
+                                    Informações sobre a origem do animal
+                                </button>
+                            </h2>
+                            <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+                                <div class="accordion-body">
+                                    <div class="container">
+                                        <div class="row justify-content-md-center">
+                                            <div class="col-md-6" style="text-align: center;">
+                                                <label class="modal-title" style="font-weight: bold;">Nome da fazenda</label>
+                                                <input type="text" class="form-control" value="{{ fazenda.nome_fazenda }}" readonly/>
+                                            </div>
+                                            <div class="col-md-6" style="text-align: center;">
+                                                <label class="modal-title" style="font-weight: bold;">Localização</label>
+                                                <input type="text" class="form-control" value="{{ fazenda.localizacao_fazenda }}" readonly/>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div class="row justify-content-md-center">
+                                            <div class="col-md-4" style="text-align: center;">
+                                                <label class="modal-title" style="font-weight: bold;">Sistema de criação</label>
+                                                <input type="text" class="form-control" value={% if fazenda.tipo_criacao == "E" %}"Extensivo"{% else %}"Intensivo"{% endif %} readonly/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingThree">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree" style="font-weight: bold;">
+                                Informações sobre o animal
+                            </button>
+                            </h2>
+                            <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
+                                <div class="accordion-body">
+                                    <div class="container">
+                                        <div class="accordion-body">
+                                            <div class="container">
+                                                <div class="row justify-content-md-center">
+                                                    <div class="col-md-4" style="text-align: center;">
+                                                        <label class="modal-title" style="font-weight: bold;">Raça</label>
+                                                        <input type="text" class="form-control" value="{{ animal.raca }}" readonly/>
+                                                    </div>
+                                                    <div class="col-md-4" style="text-align: center;">
+                                                        <label class="modal-title" style="font-weight: bold;">Gênero</label>
+                                                        <input type="text" class="form-control" value={% if animal.genero == "M" %}"Macho"{% else %}"Fêmea"{% endif %} readonly/>
+                                                    </div>
+                                                </div>
+                                                <br>
+                                                <div class="row justify-content-md-center">
+                                                    <div class="col-md-4" style="text-align: center;">
+                                                        <label class="modal-title" style="font-weight: bold;">Data de nascimento</label>
+                                                        <input type="text" class="form-control" value="{{ animal.data_nascimento }}" readonly/>
+                                                    </div>
+                                                    <div class="col-md-4" style="text-align: center;">
+                                                        <label class="modal-title" style="font-weight: bold;">Peso de nascimento (kg)</label>
+                                                        <input type="text" class="form-control" value="{{ animal.peso_nascimento }}" readonly/>
+                                                    </div>
+                                                </div>
+                                                <br>
+                                                {% if terminacao %}
+                                                <div class="row justify-content-md-center">
+                                                    <div class="col-md-4" style="text-align: center;">
+                                                        <label class="modal-title" style="font-weight: bold;">Idade do animal (em meses)</label>
+                                                        <input type="text" class="form-control" value="{{ terminacao.idade_animal }}" readonly/>
+                                                    </div>
+                                                    <div class="col-md-4" style="text-align: center;">
+                                                        <label class="modal-title" style="font-weight: bold;">Animal castrado?</label>
+                                                        <input type="text" class="form-control" value={% if terminacao.animal_castrado == "S" %}"Sim"{% else %}"Não"{% endif %} readonly/>
+                                                    </div>
+                                                </div>
+                                                {% endif %}
+                                                {% if vacinas %}
+                                                <hr>
+                                                <div class="row justify-content-md-center">
+                                                    <div class="col-md-12" style="text-align: center;">
+                                                        <label class="modal-title" style="font-weight: bold;">Vacinas que o animal recebeu</label>
+                                                    </div>
+                                                </div>
+                                                <br>
+                                                <div class="table-responsive">
+                                                    <table class="table table-hover" style="text-align: center;">
+                                                        <thead>
+                                                            <th class="th" scope="col" style="vertical-align: middle;">Especificidade</th>
+                                                            <th class="th" scope="col" style="vertical-align: middle;">Lote</th>
+                                                            <th class="th" scope="col" style="vertical-align: middle;">Dose (mL)</th>
+                                                            <th class="th" scope="col" style="vertical-align: middle;">Data de aplicação</th>
+                                                        </thead>
+                                                        <tbody>
+                                                            {% for vacina in vacinas %}
+                                                                <tr>
+                                                                    <td scope="col">{{ vacina.especificidade }}</td>
+                                                                    <td scope="col">{{ vacina.lote }}</td>
+                                                                    <td scope="col">{{ vacina.dose }}</td>
+                                                                    <td scope="col">{{ vacina.data_aplicacao }}</td>
+                                                                </tr>
+                                                            {% endfor %}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingFour">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour" style="font-weight: bold;">
+                                Informações sobre o tempo de vida do animal
+                            </button>
+                            </h2>
+                            <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#accordionExample">
+                                <div class="accordion-body">
+                                    <div class="container">
+                                        {% if terminacao %}
+                                        <div class="row justify-content-md-center">
+                                            <div class="col-md-4" style="text-align: center;">
+                                                <label class="modal-title" style="font-weight: bold;">Sistema de terminação</label>
+                                                <input type="text" class="form-control" value={% if terminacao.sistema_terminacao == "P" %}"Pasto"{% else %}"Confinamento"{% endif %} readonly/>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        {% endif %}
+                                        <div class="row justify-content-md-center">
+                                            {% if terminacao %}
+                                            <div class="col-md-4" style="text-align: center;">
+                                                <label class="modal-title" style="font-weight: bold;">Data de entrada</label>
+                                                <input type="text" class="form-control" value="{{ terminacao.data_inicio }}" readonly/>
+                                            </div>
+                                            {% endif %}
+                                            {% if venda %}
+                                            <div class="col-md-4" style="text-align: center;">
+                                                <label class="modal-title" style="font-weight: bold;">Data de saída</label>
+                                                <input type="text" class="form-control" value="{{ venda.data_venda }}" readonly/>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                        <br>
+                                        <div class="row justify-content-md-center">
+                                            {% if terminacao %}
+                                            <div class="col-md-4" style="text-align: center;">
+                                                <label class="modal-title" style="font-weight: bold;">Peso inicial (kg)</label>
+                                                <input type="text" class="form-control" value="{{ terminacao.peso_inicial }}" readonly/>
+                                            </div>
+                                            {% endif %}
+                                            {% if item_venda %}
+                                            <div class="col-md-4" style="text-align: center;">
+                                                <label class="modal-title" style="font-weight: bold;">Peso final (kg)</label>
+                                                <input type="text" class="form-control" value="{{ item_venda.peso_final }}" readonly/>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                        {% if item_venda %}
+                                        <hr>
+                                        <div class="row justify-content-md-center">
+                                            <div class="col-md-12" style="text-align: center;">
+                                                <label class="modal-title" style="font-weight: bold;">Índices de temperatura e umidade</label>
+                                            </div>
+                                        </div>
+                                        <div class="row justify-content-md-center">
+                                            <div class="col-md-4" style="text-align: center;">
+                                                <label class="modal-title" style="font-weight: bold;">Mínimo</label>
+                                                <input type="text" class="form-control" value={% if item_venda.itu_min <= 74 %}"SITUAÇÃO DE CONFORTO"{% elif item_venda.itu_min >= 75 and item_venda.itu_min <= 78 %}"SITUAÇÃO DE ALERTA"{% elif item_venda.itu_min >= 79 and item_venda.itu_min <= 84 %}"SITUAÇÃO DE PERIGO"{% else %}"SITUAÇÃO DE EMERGÊNCIA"{% endif %} readonly/>
+                                            </div>
+                                            <div class="col-md-4" style="text-align: center;">
+                                                <label class="modal-title" style="font-weight: bold;">Médio</label>
+                                                <input type="text" class="form-control" value={% if item_venda.itu_medio <= 74 %}"SITUAÇÃO DE CONFORTO"{% elif item_venda.itu_medio >= 75 and item_venda.itu_medio <= 78 %}"SITUAÇÃO DE ALERTA"{% elif item_venda.itu_medio >= 79 and item_venda.itu_medio <= 84 %}"SITUAÇÃO DE PERIGO"{% else %}"SITUAÇÃO DE EMERGÊNCIA"{% endif %} readonly/>
+                                            </div>
+                                            <div class="col-md-4" style="text-align: center;">
+                                                <label class="modal-title" style="font-weight: bold;">Máximo</label>
+                                                <input type="text" class="form-control" value={% if item_venda.itu_max <= 74 %}"SITUAÇÃO DE CONFORTO"{% elif item_venda.itu_max >= 75 and item_venda.itu_max <= 78 %}"SITUAÇÃO DE ALERTA"{% elif item_venda.itu_max >= 79 and item_venda.itu_max <= 84 %}"SITUAÇÃO DE PERIGO"{% else %}"SITUAÇÃO DE EMERGÊNCIA"{% endif %} readonly/>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br>
+                        {% if frigorifico %}
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingFive">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive" style="font-weight: bold;">
+                                Informações sobre o frigorífico
+                            </button>
+                            </h2>
+                            <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingFive" data-bs-parent="#accordionExample">
+                                <div class="accordion-body">
+                                    <div class="container">
+                                        <div class="row justify-content-md-center">
+                                            <div class="col-md-6" style="text-align: center;">
+                                                <label class="modal-title" style="font-weight: bold;">Nome do frigorífico</label>
+                                                <input type="text" class="form-control" value="{{ frigorifico.nome_frigorifico }}" readonly/>
+                                            </div>
+                                            <div class="col-md-6" style="text-align: center;">
+                                                <label class="modal-title" style="font-weight: bold;">Localização</label>
+                                                <input type="text" class="form-control" value="{{ frigorifico.localizacao_frigorifico }}" readonly/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                {% else %}
+                <div class="erro-div">
+                    <i class="fa fa-frown-o" aria-hidden="true" style="font-size: 10rem;"></i>
+                    <h1>Não foi possível encontrar esta embalagem!</h1>
+                </div>
+                {% endif %}
+            </main>
+
+            {% if mensagem == 'OK' %}
+            <footer class="bd-footer bg-dark py-5 mt-5 text-white" style="text-align: center;">
+                <div class="row">
+                    <div class="col-md-6">
+                        {% if valido_blockchain %}<img type="image/x-icon" src="{% static 'img/blockchain_true.png' %}" class="img-blockchain"></img>{% else %}<img type="image/x-icon" src="{% static 'img/blockchain_false.png' %}" class="img-blockchain"></img>{% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <p class="paragraph-footer">Responda o formulário de satisfação e ganhe um <strong>cupom de desconto</strong>!</p>
+                        <button type="button" id="open_form" class="btn btn-success">Responder formulário</button>
+                    </div>
+                </div>
+            </footer>
+            {% endif %}
+
+        </div>
+        <script type="text/javascript" src="{% static 'js/jquery/jquery.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/bootstrap5.0.2/bootstrap.bundle.min.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/popper2.9.2/popper.min.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/bootstrap5.0.2/bootstrap.min.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/popper/popper.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/bootstrap/bootstrap.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/info_carne.js' %}"></script>
+  </body>
+</html>

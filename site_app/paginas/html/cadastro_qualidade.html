@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title_html %}
+    <title>Cadastrar Qualidade</title>
+{% endblock %}
+
+{% block img_page %}
+    <img src="{% static 'img/qualidade.jpg' %}" class="img-home" alt="Qualidade"/>
+{% endblock %}
+
+{% block form_content %}
+    <form id="form_qualidade" name="form_qualidade" action="/salvar_qualidade" enctype="multipart/form-data" method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="animal" style="color: red;">*</label>
+            <label class="modal-title" for="animal">Animal</label>
+            <i class="fa fa-question-circle" aria-hidden="true" title="✅: Validado na blockchain / ❌: Não validado na blockchain"></i>
+            <select id="animal" name="animal" class="form-control" required>
+                <option value="" selected>-- Selecione um animal --</option>
+                {% for animal in animais %}
+                    <option value="{{ animal.id_animal }}">{% if animal.check_blockchain %}✅ - {{ animal.id_animal }}: {{ animal.raca }} / {% if animal.genero == "M" %}Macho{%else%}Fêmea{% endif %}{% else %}❌ - {{ animal.id_animal }}: {{ animal.raca }} / {% if animal.genero == "M" %}Macho{%else%}Fêmea{% endif %}{% endif %}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="comprimento_sarcomero" style="color: red;">*</label>
+            <label class="modal-title" for="comprimento_sarcomero">Comprimento do sarcômero (mm)</label>
+            <input type="number" class="form-control" id="comprimento_sarcomero" name="comprimento_sarcomero" min="0" step=0.01 onkeypress="return (event.charCode !=8 && event.charCode ==0 || ( event.charCode == 44 || (event.charCode >= 48 && event.charCode <= 57)))" placeholder="Digite o comprimento do sarcômero" required/>
+        </div>
+        <div class="form-group">
+            <label for="forca_cisalhamento" style="color: red;">*</label>
+            <label class="modal-title" for="forca_cisalhamento">Força de cisalhamento (Kgf)</label>
+            <input type="number" class="form-control" id="forca_cisalhamento" name="forca_cisalhamento" min="0" step=0.01 onkeypress="return (event.charCode !=8 && event.charCode ==0 || ( event.charCode == 44 || (event.charCode >= 48 && event.charCode <= 57)))" placeholder="Digite a força do cisalhamento" required/>
+        </div>
+        <div class="form-group">
+            <label for="perda_descongelamento" style="color: red;">*</label>
+            <label class="modal-title" for="perda_descongelamento">Perda por descongelamento (%)</label>
+            <input type="number" class="form-control" id="perda_descongelamento" name="perda_descongelamento" min="0" step=0.01 onkeypress="return (event.charCode !=8 && event.charCode ==0 || ( event.charCode == 44 || (event.charCode >= 48 && event.charCode <= 57)))" placeholder="Digite a perda por descongelamento" required/>
+        </div>
+        <div class="form-group">
+            <label for="perda_coccao" style="color: red;">*</label>
+            <label class="modal-title" for="perda_coccao">Perda por cocção (%)</label>
+            <input type="number" class="form-control" id="perda_coccao" name="perda_coccao" min="0" step=0.01 onkeypress="return (event.charCode !=8 && event.charCode ==0 || ( event.charCode == 44 || (event.charCode >= 48 && event.charCode <= 57)))" placeholder="Digite a perda por cocção" required/>
+        </div>
+        <div class="row">
+            <div class="col-md-12" style="text-align: center;">
+                <label class="modal-title" for="">Cor da carne</label>
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-md-4">
+                <label for="cor_carne_l" style="color: red;">*</label>
+                <label class="modal-title" for="cor_carne_l">L</label>
+                <input type="text" class="form-control" id="cor_carne_l" name="cor_carne_l" maxlength="45" placeholder="Digite a cor L" required/>
+            </div>
+            <div class="col-md-4">
+                <label for="cor_carne_a" style="color: red;">*</label>
+                <label class="modal-title" for="cor_carne_a">A</label>
+                <input type="text" class="form-control" id="cor_carne_a" name="cor_carne_a" maxlength="45" placeholder="Digite a cor A" required/>
+            </div>
+            <div class="col-md-4">
+                <label for="cor_carne_b" style="color: red;">*</label>
+                <label class="modal-title" for="cor_carne_b">B</label>
+                <input type="text" class="form-control" id="cor_carne_b" name="cor_carne_b" maxlength="45" placeholder="Digite a cor B" required/>
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-md-12" style="text-align: center;">
+                <label class="modal-title" for="">Cor da gordura</label>
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-md-4">
+                <label for="cor_gordura_l" style="color: red;">*</label>
+                <label class="modal-title" for="cor_gordura_l">L</label>
+                <input type="text" class="form-control" id="cor_gordura_l" name="cor_gordura_l" maxlength="45" placeholder="Digite a cor L" required/>
+            </div>
+            <div class="col-md-4">
+                <label for="cor_gordura_a" style="color: red;">*</label>
+                <label class="modal-title" for="cor_gordura_a">A</label>
+                <input type="text" class="form-control" id="cor_gordura_a" name="cor_gordura_a" maxlength="45" placeholder="Digite a cor A" required/>
+            </div>
+            <div class="col-md-4">
+                <label for="cor_gordura_b" style="color: red;">*</label>
+                <label class="modal-title" for="cor_gordura_b">B</label>
+                <input type="text" class="form-control" id="cor_gordura_b" name="cor_gordura_b" maxlength="45" placeholder="Digite a cor B" required/>
+            </div>
+        </div>
+        <br>
+        <div class="form-group">
+            <label style="color: red;">*: Campos obrigatórios</label>
+        </div>
+        <button type="button" id="salvar" class="btn btn-success">Salvar</button>
+        <button type="button" id="voltar" class="btn btn-danger">Voltar</button>
+    </form>
+{% endblock %}
+
+{% block scripts_js %}
+    <script type="text/javascript" src="{% static 'js/cad_qualidade.js' %}"></script>
+{% endblock %}

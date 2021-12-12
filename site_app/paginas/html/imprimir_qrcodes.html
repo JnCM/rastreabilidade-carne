@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title_html %}
+  <title>Imprimir Qrcodes</title>
+{% endblock %}
+
+{% block img_page %}
+  <img src="{% static 'img/impressora.jpg' %}" class="img-home" alt="Impressora"/>
+{% endblock %}
+
+{% block form_content %}
+  <div class="form-group">
+    <label for="animal" style="color: red;">*</label>
+    <label class="modal-title" for="animal">Animal</label>
+    <i class="fa fa-question-circle" aria-hidden="true" title="✅: Validado na blockchain / ❌: Não validado na blockchain"></i>
+    <select id="animal" name="animal" class="form-control" required>
+        <option value="" selected>-- Selecione um animal --</option>
+        {% for animal in animais %}
+            <option value="{{ animal.id_animal }}">{% if animal.check_blockchain %}✅ - {{ animal.id_animal }}: {{ animal.raca }} / {% if animal.genero == "M" %}Macho{%else%}Fêmea{% endif %}{% else %}❌ - {{ animal.id_animal }}: {{ animal.raca }} / {% if animal.genero == "M" %}Macho{%else%}Fêmea{% endif %}{% endif %}</option>
+        {% endfor %}
+    </select>
+  </div>
+  <div class="form-group">
+    <table id="tabela_embalagens" class="table table-hover">
+        <thead>
+            <th class="th" scope="col" style="vertical-align: middle;">ID</th>
+            <th class="th" scope="col" style="vertical-align: middle;">Peso do corte (kg)</th>
+            <th class="th" scope="col" style="vertical-align: middle;">Tipo do corte</th>
+            <th></th>
+        </thead>
+        <tbody>
+            <tr>
+                <td colspan="4">Não há embalagens para impressão.</td>
+            </tr>
+        </tbody>
+    </table>
+  </div>
+  <div class="form-group" style="text-align: center;">
+    <button id="baixar-todas" type="button" class="btn btn-primary" disabled>Baixar todas</button>
+    <button type="button" id="voltar" class="btn btn-danger">Voltar</button>
+  </div>
+{% endblock %}
+
+{% block scripts_js %}
+  <script type="text/javascript" src="{% static 'js/imprime_qrcodes.js' %}"></script>
+{% endblock %}

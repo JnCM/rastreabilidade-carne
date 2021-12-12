@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title_html %}
+    <title>Cadastrar Embalagem</title>
+{% endblock %}
+
+{% block img_page %}
+    <img src="{% static 'img/embalagem.jpg' %}" class="img-home" alt="Embalagem"/>
+{% endblock %}
+
+{% block form_content %}
+    <form id="form_embalagem" name="form_embalagem" action="/salvar_embalagem" enctype="multipart/form-data" method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="animal" style="color: red;">*</label>
+            <label class="modal-title" for="animal">Animal</label>
+            <i class="fa fa-question-circle" aria-hidden="true" title="✅: Validado na blockchain / ❌: Não validado na blockchain"></i>
+            <select id="animal" name="animal" class="form-control" required>
+                <option value="" selected>-- Selecione um animal --</option>
+                {% for animal in animais %}
+                    <option value="{{ animal.id_animal }}">{% if animal.check_blockchain %}✅ - {{ animal.id_animal }}: {{ animal.raca }} / {% if animal.genero == "M" %}Macho{%else%}Fêmea{% endif %}{% else %}❌ - {{ animal.id_animal }}: {{ animal.raca }} / {% if animal.genero == "M" %}Macho{%else%}Fêmea{% endif %}{% endif %}</option>
+                {% endfor %}
+            </select>
+            <input type="hidden" class="form-control" id="lista_embalagens" name="lista_embalagens" required/>
+        </div>
+        <div class="form-group">
+            <label for="data_embalagem" style="color: red;">*</label>
+            <label class="modal-title" for="data_embalagem">Data da embalagem</label>
+            <input type="date" class="form-control" id="data_embalagem" name="data_embalagem" placeholder="Digite a data da embalagem" required/>
+        </div>
+        <div class="form-group" style="text-align: center;">
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-embalagem">+ Adicionar embalagem</button>
+        </div>
+        <div class="form-group">
+            <table id="tabela_embalagens" class="table table-hover">
+                <thead>
+                    <th class="th" scope="col" style="vertical-align: middle;">Peso do corte (kg)</th>
+                    <th class="th" scope="col" style="vertical-align: middle;">Tipo do corte</th>
+                    <th></th>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="3">Não há embalagens inseridas.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <button type="button" id="salvar" class="btn btn-success">Salvar</button>
+        <button type="button" id="voltar" class="btn btn-danger">Voltar</button>
+    </form>
+{% endblock %}
+
+{% block modal_content %}
+    <!-- Modal -->
+    <div class="modal fade" id="modal-embalagem" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Adicionar nova embalagem</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="container">
+                        <div class="form-group">
+                            <label for="peso_corte" style="color: red;">*</label>
+                            <label class="modal-title" for="peso_corte">Peso do corte (kg)</label>
+                            <input type="number" class="form-control" id="peso_corte" name="peso_corte" min="1" step=0.01 onkeypress="return (event.charCode !=8 && event.charCode ==0 || ( event.charCode == 44 || (event.charCode >= 48 && event.charCode <= 57)))" placeholder="Digite o peso do corte" required/>
+                        </div>
+                        <div class="form-group">
+                            <label for="" style="color: red;">*</label>
+                            <label class="modal-title" for="">Tipo do corte</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="tipo_corte" id="contrafile" value="CF" required/>
+                            <label class="form-check-label modal-title" for="contrafile">
+                                Contrafilé
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="tipo_corte" id="fraldinha" value="FR"/>
+                            <label class="form-check-label modal-title" for="fraldinha">
+                                Fraldinha
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="tipo_corte" id="filemignon" value="FM"/>
+                            <label class="form-check-label modal-title" for="filemignon">
+                                Filé-mignon
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="tipo_corte" id="picanha" value="PC"/>
+                            <label class="form-check-label modal-title" for="picanha">
+                                Picanha
+                            </label>
+                        </div>
+                        <br>
+                        <div class="form-group">
+                            <label style="color: red;">*: Campos obrigatórios</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="add_embalagem" class="btn btn-success">Adicionar</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts_js %}
+    <script type="text/javascript" src="{% static 'js/cad_embalagem.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title_html %}
+    <title>Cadastrar Comercialização</title>
+{% endblock %}
+
+{% block img_page %}
+  <img src="{% static 'img/carrinho.jpg' %}" class="img-home" alt="Comercialização"/>
+{% endblock %}
+
+{% block form_content %}
+    <form id="form_comercializacao" name="form_comercializacao" action="/salvar_comercializacao" enctype="multipart/form-data" method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="data_venda" style="color: red;">*</label>
+            <label class="modal-title" for="data_venda">Data e hora da venda da(s) embalagem(ns)</label>
+            <input type="datetime-local" class="form-control" id="data_venda" name="data_venda" placeholder="Digite a data e hora da venda da embalagem" required/>
+            <input type="hidden" class="form-control" id="lista_embalagens" name="lista_embalagens" required/>
+        </div>
+        <div class="form-group" style="text-align: center;">
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-comercializacao">+ Adicionar embalagem</button>
+        </div>
+        <div class="form-group">
+            <table id="tabela_comercializacao" class="table table-hover">
+                <thead>
+                    <th class="th" scope="col" style="vertical-align: middle;">Embalagem</th>
+                    <th></th>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="2">Não há embalagens inseridas.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <button type="button" id="salvar" class="btn btn-success">Salvar</button>
+        <button type="button" id="voltar" class="btn btn-danger">Voltar</button>
+    </form>
+{% endblock %}
+
+{% block modal_content %}
+    <!-- Modal -->
+    <div class="modal fade" id="modal-comercializacao" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Adicionar nova embalagem</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="container">
+                        <div class="form-group">
+                            <label for="embalagem" style="color: red;">*</label>
+                            <label class="modal-title" for="embalagem">Embalagem</label>
+                            <i class="fa fa-question-circle" aria-hidden="true" title="✅: Validado na blockchain / ❌: Não validado na blockchain"></i>
+                            <select id="embalagem" name="embalagem" class="form-control" required>
+                                <option value="" selected>-- Selecione uma embalagem --</option>
+                                {% for embalagem in embalagens %}
+                                    <option value="{{ embalagem.id_embalagem }}">{% if embalagem.check_blockchain %}✅ - {% if embalagem.tipo_corte == "CF" %}Contrafilé{% elif embalagem.tipo_corte == "FR" %}Fraldinha{% elif embalagem.tipo_corte == "FM" %}Filé-mignon{% else %}Picanha{% endif %}: {{ embalagem.peso_corte }} kg / {{ embalagem.data_embalagem }}{% else %}❌ - {% if embalagem.tipo_corte == "CF" %}Contrafilé{% elif embalagem.tipo_corte == "FR" %}Fraldinha{% elif embalagem.tipo_corte == "FM" %}Filé-mignon{% else %}Picanha{% endif %}: {{ embalagem.peso_corte }} kg / {{ embalagem.data_embalagem }}{% endif %}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <br>
+                        <div class="form-group">
+                            <label style="color: red;">*: Campos obrigatórios</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="add_embalagem" class="btn btn-success">Adicionar</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts_js %}
+  <script type="text/javascript" src="{% static 'js/cad_comercializacao.js' %}"></script>
+{% endblock %}

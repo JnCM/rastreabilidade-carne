@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title_html %}
+    <title>Cadastrar Terminação</title>
+{% endblock %}
+
+{% block img_page %}
+    <img src="{% static 'img/terminacao.jpg' %}" class="img-home" alt="Terminação"/>
+{% endblock %}
+
+{% block form_content %}
+    <form id="form_terminacao" name="form_terminacao" action="/salvar_terminacao" enctype="multipart/form-data" method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="animal" style="color: red;">*</label>
+            <label class="modal-title" for="animal">Animal</label>
+            <i class="fa fa-question-circle" aria-hidden="true" title="✅: Validado na blockchain / ❌: Não validado na blockchain"></i>
+            <select id="animal" name="animal" class="form-control" required>
+                <option value="" selected>-- Selecione um animal --</option>
+                {% for animal in animais %}
+                    <option value="{{ animal.id_animal }}">{% if animal.check_blockchain %}✅ - {{ animal.id_animal }}: {{ animal.raca }} / {% if animal.genero == "M" %}Macho{%else%}Fêmea{% endif %}{% else %}❌ - {{ animal.id_animal }}: {{ animal.raca }} / {% if animal.genero == "M" %}Macho{%else%}Fêmea{% endif %}{% endif %}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="data_inicio" style="color: red;">*</label>
+            <label class="modal-title" for="data_inicio">Data de início da terminação</label>
+            <input type="date" class="form-control" id="data_inicio" name="data_inicio" placeholder="Digite a data de início" required/>
+        </div>
+        <div class="form-group">
+            <label for="idade_animal" style="color: red;">*</label>
+            <label class="modal-title" for="idade_animal">Idade do animal</label>
+            <input type="number" class="form-control" id="idade_animal" name="idade_animal" min="1" step=1 onkeypress="return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))" placeholder="Digite a idade do animal" required/>
+        </div>
+        <div class="form-group">
+            <label for="peso_inicial" style="color: red;">*</label>
+            <label class="modal-title" for="peso_inicial">Peso no início da terminação (kg)</label>
+            <input type="number" class="form-control" id="peso_inicial" name="peso_inicial" min="1" step=0.01 onkeypress="return (event.charCode !=8 && event.charCode ==0 || ( event.charCode == 44 || (event.charCode >= 48 && event.charCode <= 57)))" placeholder="Digite o peso do animal" required/>
+        </div>
+        <div class="row">
+            <div class="col-md-6 col-term">
+                <div class="form-group">
+                    <label for="" style="color: red;">*</label>
+                    <label class="modal-title" for="">Animal castrado?</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="castrado" id="sim" value="S" required/>
+                    <label class="form-check-label modal-title" for="sim">
+                        Sim
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="castrado" id="nao" value="N"/>
+                    <label class="form-check-label modal-title" for="nao">
+                        Não
+                    </label>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="" style="color: red;">*</label>
+                    <label class="modal-title" for="">Sistema de terminação:</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="sistema_terminacao" id="pasto" value="P" required/>
+                    <label class="form-check-label modal-title" for="pasto">
+                        Pasto
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="sistema_terminacao" id="confinamento" value="C"/>
+                    <label class="form-check-label modal-title" for="confinamento">
+                        Confinamento
+                    </label>
+                </div>
+            </div>
+        </div>
+        <br>
+        <div class="form-group">
+            <label style="color: red;">*: Campos obrigatórios</label>
+        </div>
+        <button type="button" id="salvar" class="btn btn-success">Salvar</button>
+        <button type="button" id="voltar" class="btn btn-danger">Voltar</button>
+    </form>
+{% endblock %}
+
+{% block scripts_js %}
+  <script type="text/javascript" src="{% static 'js/cad_terminacao.js' %}"></script>
+{% endblock %}
