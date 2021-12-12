@@ -61,7 +61,7 @@ def salvar_embalagem(request):
                     novoItem.save(force_insert=True)
                     novaEmbalagem.save(force_insert=True)
                     
-                    img = qrcode.make('http://127.0.0.1:8000/embalagens/{}'.format(idEmbalagem))
+                    img = qrcode.make('https://rastreio-carne.herokuapp.com/embalagens/{}'.format(idEmbalagem))
                     img_bytes = io.BytesIO()
                     img.save(img_bytes, format="PNG")
                     img_bytes = img_bytes.getvalue()
