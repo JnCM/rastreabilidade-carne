@@ -7,6 +7,7 @@ from django.db.models import Max
 from rastreio_carne_ufv import blockchain_connect, settings
 import hashlib
 from django.forms.models import model_to_dict
+import asyncio
 
 def cadastro_fazenda(request):
     if request.user.is_authenticated:
@@ -14,7 +15,7 @@ def cadastro_fazenda(request):
     return HttpResponseRedirect("/login")
 
 
-def salvar_fazenda(request):
+async def salvar_fazenda(request):
     if request.method == "POST":
         nomeFazenda = request.POST.get("nome_fazenda")
         localizacaoFazenda = request.POST.get("localizacao_fazenda")
@@ -31,7 +32,8 @@ def salvar_fazenda(request):
             )
             json_gen_hash = model_to_dict(novaFazenda)
             valor_hash = hashlib.md5(str(json_gen_hash).encode())
-            id_blockchain = blockchain_connect.setDado(settings.CONTRACT, settings.W3_CONNECTION, valor_hash.hexdigest())
+            loop = asyncio.get_event_loop()
+            id_blockchain = loop.run_until_complete(blockchain_connect.setDado(settings.CONTRACT, settings.W3_CONNECTION, valor_hash.hexdigest()))
             if id_blockchain != -1:
                 id_hash = utils.proxIdHash()
                 novoItem = models.Hash(

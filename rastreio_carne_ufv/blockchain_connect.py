@@ -1,6 +1,7 @@
 import json, os
 from web3 import Web3
 from environs import Env
+from asgiref.sync import sync_to_async
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -31,7 +32,8 @@ def conectarContrato():
     except:
         print("Erro interno")
         return None, None
-        
+
+@sync_to_async        
 def setDado(contrato, w3_con, dado):
     try:
         trans = contrato.functions.addInfo(dado).buildTransaction({'nonce': returnNonceDado(w3_con),'from': BLOCKCHAIN_ACCOUNT})
