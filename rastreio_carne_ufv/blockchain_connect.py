@@ -37,7 +37,7 @@ def setDado(contrato, w3_con, dado):
         trans = contrato.functions.addInfo(dado).buildTransaction({'nonce': returnNonceDado(w3_con),'from': BLOCKCHAIN_ACCOUNT})
         signed_txn = w3_con.eth.account.sign_transaction(trans, private_key=PK_ACCOUNT)
         tx_hash = w3_con.eth.sendRawTransaction(signed_txn.rawTransaction)
-        #w3_con.eth.waitForTransactionReceipt(tx_hash) # caso precise aguardar o término da transação na blockchain
+        w3_con.eth.waitForTransactionReceipt(tx_hash) # caso precise aguardar o término da transação na blockchain
         id_blockchain = int(w3_con.eth.getTransactionReceipt(tx_hash)['logs'][0]['data'],16)
         #print("Codigo registrado: ", id_blockchain)
         return id_blockchain
