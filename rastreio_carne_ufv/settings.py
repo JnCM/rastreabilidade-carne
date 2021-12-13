@@ -10,9 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
-import os
-from . import blockchain_connect
+import os, json
 from environs import Env
+from web3 import Web3
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -28,7 +28,9 @@ SECRET_KEY = env.str("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
+# DEBUG = True
 
+#ALLOWED_HOSTS = []
 ALLOWED_HOSTS = ["rastreio-carne.herokuapp.com", "127.0.0.1"]
 
 
@@ -41,7 +43,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'site_app'
+    'site_app',
+    'django_celery_results'
 ]
 
 MIDDLEWARE = [
@@ -169,8 +172,34 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Parâmetros blockchain
+PROVIDER = env.str("PROVIDER")
+BLOCKCHAIN_ACCOUNT = env.str("BLOCKCHAIN_ACCOUNT")
+PK_ACCOUNT = env.str("PK_ACCOUNT")
+CONTRACT_ABI = env.str("CONTRACT_ABI")
+HASH_CONTRACT = env.str("HASH_CONTRACT")
 
-W3_CONNECTION = None
-CONTRACT = None
+def CONECTAR_CONTRATO():
+    try:
+        #Conexão com provider
+        web3 = Web3(Web3.HTTPProvider(PROVIDER))
+        if not(web3.isConnected()):
+            print("Erro de conexão")
+            return None, None
+        
+        #Dados do contrato storage.sol     
+        abi = json.loads(CONTRACT_ABI)
+        tx_hash = HASH_CONTRACT
+        tx_receipt = web3.eth.getTransactionReceipt(tx_hash)
+        contratoDados = web3.eth.contract(address=tx_receipt.contractAddress, abi=abi)
+        #print("Conectado!")
+        return web3, contratoDados
+    except:
+        print("Erro interno")
+        return None, None
 
-W3_CONNECTION, CONTRACT = blockchain_connect.conectarContrato()
+W3_CONNECTION, CONTRACT = CONECTAR_CONTRATO()
+
+# Celery Parâmetros
+CELERY_BROKER_URL = env.str("REDIS_URL")
+CELERY_RESULT_BACKEND = 'django-db'

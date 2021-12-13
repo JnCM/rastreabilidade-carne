@@ -1,61 +1,29 @@
-import json, os
-from web3 import Web3
-from environs import Env
-from asgiref.sync import sync_to_async
+from celery import shared_task
+from . import settings
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-env = Env()
-env.read_env(os.path.join(BASE_DIR, '.env'), recurse=False)
-
-PROVIDER = env.str("PROVIDER")
-BLOCKCHAIN_ACCOUNT = env.str("BLOCKCHAIN_ACCOUNT")
-PK_ACCOUNT = env.str("PK_ACCOUNT")
-CONTRACT_ABI = env.str("CONTRACT_ABI")
-HASH_CONTRACT = env.str("HASH_CONTRACT")
-
-def conectarContrato():
+@shared_task
+def setDado(dado):
     try:
-        #Conexão com provider
-        web3 = Web3(Web3.HTTPProvider(PROVIDER))
-        if not(web3.isConnected()):
-            print("Erro de conexão")
-            return None, None
-        
-        #Dados do contrato storage.sol     
-        abi = json.loads(CONTRACT_ABI)
-        tx_hash = HASH_CONTRACT
-        tx_receipt = web3.eth.getTransactionReceipt(tx_hash)
-        contratoDados = web3.eth.contract(address=tx_receipt.contractAddress, abi=abi)
-        #print("Conectado!")
-        return web3, contratoDados
-    except:
-        print("Erro interno")
-        return None, None
-
-      
-async def setDado(contrato, w3_con, dado):
-    try:
-        trans = contrato.functions.addInfo(dado).buildTransaction({'nonce': returnNonceDado(w3_con),'from': BLOCKCHAIN_ACCOUNT})
-        signed_txn = w3_con.eth.account.sign_transaction(trans, private_key=PK_ACCOUNT)
-        tx_hash = w3_con.eth.sendRawTransaction(signed_txn.rawTransaction)
-        await w3_con.eth.waitForTransactionReceipt(tx_hash) # caso precise aguardar o término da transação na blockchain
-        id_blockchain = int(w3_con.eth.getTransactionReceipt(tx_hash)['logs'][0]['data'],16)
+        trans = settings.CONTRACT.functions.addInfo(dado).buildTransaction({'nonce': returnNonceDado(),'from': settings.BLOCKCHAIN_ACCOUNT})
+        signed_txn = settings.W3_CONNECTION.eth.account.sign_transaction(trans, private_key=settings.PK_ACCOUNT)
+        tx_hash = settings.W3_CONNECTION.eth.sendRawTransaction(signed_txn.rawTransaction)
+        settings.W3_CONNECTION.eth.waitForTransactionReceipt(tx_hash) # caso precise aguardar o término da transação na blockchain
+        id_blockchain = int(settings.W3_CONNECTION.eth.getTransactionReceipt(tx_hash)['logs'][0]['data'],16)
         #print("Codigo registrado: ", id_blockchain)
         return id_blockchain
     except Exception as error:
         print(error)
         return -1
 
-def getDado(contrato, id_dado):
+def getDado(id_dado):
     try:
-        retorno = contrato.functions.seeInfo(id_dado).call({'from': BLOCKCHAIN_ACCOUNT})
+        retorno = settings.CONTRACT.functions.seeInfo(id_dado).call({'from': settings.BLOCKCHAIN_ACCOUNT})
         #print(retorno)
         return retorno
     except Exception as error:
         print(error)
         return -1
 
-def returnNonceDado(w3_con):
-    totalTransactions = w3_con.eth.getTransactionCount(BLOCKCHAIN_ACCOUNT, 'pending')
+def returnNonceDado():
+    totalTransactions = settings.W3_CONNECTION.eth.getTransactionCount(settings.BLOCKCHAIN_ACCOUNT, 'pending')
     return totalTransactions
