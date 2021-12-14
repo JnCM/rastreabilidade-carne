@@ -120,7 +120,7 @@ def get_embalagem(request, id_embalagem):
             return render(request, 'info_carne.html', {'mensagem': 'ERRO'})
         check_blockchain = True
 
-        # embalagem = embalagem[0]
+        embalagem = embalagem[0]
         # save_data = embalagem["data_embalagem"]
         # embalagem["data_embalagem"] = embalagem["data_embalagem"].strftime("%Y-%m-%d")
         # hash_tb = list(models.Hash.objects.filter(id_tabela=10, id_item=str(embalagem['id_embalagem'])).values('id_hash_blockchain'))
