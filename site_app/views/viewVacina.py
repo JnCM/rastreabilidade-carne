@@ -29,7 +29,7 @@ def salvar_vacina(request):
         idAnimal = request.POST.get("animal")
         listaVacinas = json.loads(request.POST.get("lista_vacinas"))
         for vacina in listaVacinas:
-            if not verificaVacina(vacina):
+            if not verificaVacina(idAnimal, vacina):
                 msg = "VACINA(s) EXISTENTE(s)"
                 break
             else:
@@ -71,12 +71,13 @@ def proximoIdVacina():
     proximoId = int(vacinas.aggregate(Max('id_vacina'))["id_vacina__max"]) + 1
     return proximoId
 
-def verificaVacina(novaVacina):
+def verificaVacina(idAnimal, novaVacina):
     retorno = models.Vacina.objects.filter(
         especificidade=novaVacina['especificidade'],
         lote=novaVacina['lote'],
         dose=novaVacina['dose'],
-        data_aplicacao=novaVacina['data_aplicacao']
+        data_aplicacao=novaVacina['data_aplicacao'],
+        id_animal=idAnimal
     )
     if len(retorno) > 0:
         return False
