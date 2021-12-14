@@ -47,47 +47,47 @@ def salvar_embalagem(request):
                     peso_corte=float(embalagem['peso_corte']),
                     id_animal=idAnimal
                 )
-                json_gen_hash = model_to_dict(novaEmbalagem)
-                valor_hash = hashlib.md5(str(json_gen_hash).encode())
-                task = blockchain_connect.setDado.delay(valor_hash.hexdigest())
-                id_blockchain = task.get()
-                if id_blockchain != -1:
-                    id_hash = utils.proxIdHash()
-                    novoItem = models.Hash(
-                        id_hash=id_hash,
-                        id_tabela=10,
-                        id_item=str(idEmbalagem),
-                        id_hash_blockchain=id_blockchain
-                    )
-                    novoItem.save(force_insert=True)
-                    novaEmbalagem.save(force_insert=True)
-                    
-                    img = qrcode.make('https://rastreio-carne.herokuapp.com/embalagens/{}'.format(idEmbalagem))
-                    img_bytes = io.BytesIO()
-                    img.save(img_bytes, format="PNG")
-                    img_bytes = img_bytes.getvalue()
-                    if embalagem['tipo_corte'] == "PC":
-                        tipoCorte = "picanha"
-                    elif embalagem['tipo_corte'] == "FR":
-                        tipoCorte = "fraldinha"
-                    elif embalagem['tipo_corte'] == "FM":
-                        tipoCorte = "filemignon"
-                    else:
-                        tipoCorte = "contrafile"
-                    nome_imagem = "{}_{}_{}.png".format(tipoCorte, idEmbalagem, embalagem['peso_corte'])
-                    idQrcode = proximoIdQrcode()
-                    novoQrcode = models.Qrcode(
-                        id_qrcode=idQrcode,
-                        nome_imagem=nome_imagem,
-                        binario_imagem=img_bytes,
-                        id_embalagem=idEmbalagem 
-                    )
-                    novoQrcode.save(force_insert=True)
-
-                    msg = "OK"
+                # json_gen_hash = model_to_dict(novaEmbalagem)
+                # valor_hash = hashlib.md5(str(json_gen_hash).encode())
+                # task = blockchain_connect.setDado.delay(valor_hash.hexdigest())
+                # id_blockchain = task.get()
+                # if id_blockchain != -1:
+                #     id_hash = utils.proxIdHash()
+                #     novoItem = models.Hash(
+                #         id_hash=id_hash,
+                #         id_tabela=10,
+                #         id_item=str(idEmbalagem),
+                #         id_hash_blockchain=id_blockchain
+                #     )
+                #     novoItem.save(force_insert=True)
+                novaEmbalagem.save(force_insert=True)
+                
+                img = qrcode.make('https://rastreio-carne.herokuapp.com/embalagens/{}'.format(idEmbalagem))
+                img_bytes = io.BytesIO()
+                img.save(img_bytes, format="PNG")
+                img_bytes = img_bytes.getvalue()
+                if embalagem['tipo_corte'] == "PC":
+                    tipoCorte = "picanha"
+                elif embalagem['tipo_corte'] == "FR":
+                    tipoCorte = "fraldinha"
+                elif embalagem['tipo_corte'] == "FM":
+                    tipoCorte = "filemignon"
                 else:
-                    msg = "ERRO"
-                    break
+                    tipoCorte = "contrafile"
+                nome_imagem = "{}_{}_{}.png".format(tipoCorte, idEmbalagem, embalagem['peso_corte'])
+                idQrcode = proximoIdQrcode()
+                novoQrcode = models.Qrcode(
+                    id_qrcode=idQrcode,
+                    nome_imagem=nome_imagem,
+                    binario_imagem=img_bytes,
+                    id_embalagem=idEmbalagem 
+                )
+                novoQrcode.save(force_insert=True)
+
+                msg = "OK"
+            # else:
+            #     msg = "ERRO"
+            #     break
     return HttpResponse(json.dumps({'resposta': msg}))
 
 
@@ -120,17 +120,17 @@ def get_embalagem(request, id_embalagem):
             return render(request, 'info_carne.html', {'mensagem': 'ERRO'})
         check_blockchain = True
 
-        embalagem = embalagem[0]
-        save_data = embalagem["data_embalagem"]
-        embalagem["data_embalagem"] = embalagem["data_embalagem"].strftime("%Y-%m-%d")
-        hash_tb = list(models.Hash.objects.filter(id_tabela=10, id_item=str(embalagem['id_embalagem'])).values('id_hash_blockchain'))
-        id_hash = hash_tb[0]['id_hash_blockchain']
-        dado_hash = blockchain_connect.getDado(id_hash)
-        hash_embalagem = hashlib.md5(str(embalagem).encode()).hexdigest()
-        if hash_embalagem != dado_hash:
-            check_blockchain = False
-            print("Erro na embalagem")
-        embalagem["data_embalagem"] = save_data
+        # embalagem = embalagem[0]
+        # save_data = embalagem["data_embalagem"]
+        # embalagem["data_embalagem"] = embalagem["data_embalagem"].strftime("%Y-%m-%d")
+        # hash_tb = list(models.Hash.objects.filter(id_tabela=10, id_item=str(embalagem['id_embalagem'])).values('id_hash_blockchain'))
+        # id_hash = hash_tb[0]['id_hash_blockchain']
+        # dado_hash = blockchain_connect.getDado(id_hash)
+        # hash_embalagem = hashlib.md5(str(embalagem).encode()).hexdigest()
+        # if hash_embalagem != dado_hash:
+        #     check_blockchain = False
+        #     print("Erro na embalagem")
+        # embalagem["data_embalagem"] = save_data
 
         animal = list(models.Animal.objects.filter(id_animal=embalagem["id_animal"]).values())
         animal = animal[0]
