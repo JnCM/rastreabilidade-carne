@@ -59,7 +59,8 @@ def salvar_qualidade(request):
             )
             json_gen_hash = model_to_dict(novaQualidade)
             valor_hash = hashlib.md5(str(json_gen_hash).encode())
-            id_blockchain = blockchain_connect.setDado(settings.CONTRACT, settings.W3_CONNECTION, valor_hash.hexdigest())
+            task = blockchain_connect.setDado.delay(valor_hash.hexdigest())
+            id_blockchain = task.get()
             if id_blockchain != -1:
                 id_hash = utils.proxIdHash()
                 novoItem = models.Hash(

@@ -4,7 +4,7 @@ import json
 from site_app.dao import models
 from site_app.utils import utils
 from django.db.models import Max
-from rastreio_carne_ufv import blockchain_connect, settings
+from rastreio_carne_ufv import blockchain_connect
 import hashlib
 from django.forms.models import model_to_dict
 
@@ -33,7 +33,8 @@ def salvar_frigorifico(request):
             )
             json_gen_hash = model_to_dict(novoFrigorifico)
             valor_hash = hashlib.md5(str(json_gen_hash).encode())
-            id_blockchain = blockchain_connect.setDado(settings.CONTRACT, settings.W3_CONNECTION, valor_hash.hexdigest())
+            task = blockchain_connect.setDado.delay(valor_hash.hexdigest())
+            id_blockchain = task.get()
             if id_blockchain != -1:
                 id_hash = utils.proxIdHash()
                 novoItem = models.Hash(

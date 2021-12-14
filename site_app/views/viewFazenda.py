@@ -4,7 +4,7 @@ import json
 from site_app.dao import models
 from site_app.utils import utils
 from django.db.models import Max
-from rastreio_carne_ufv import blockchain_connect, settings
+from rastreio_carne_ufv import blockchain_connect
 import hashlib
 from django.forms.models import model_to_dict
 
