@@ -13,7 +13,7 @@ def cadastro_animal(request):
         for fazenda in fazendas:
             hash_tb = list(models.Hash.objects.filter(id_tabela=1, id_item=str(fazenda['id_fazenda'])).values('id_hash_blockchain'))
             id_hash = hash_tb[0]['id_hash_blockchain']
-            dado_hash = blockchain_connect.getDado(settings.CONTRACT, id_hash)
+            dado_hash = blockchain_connect.getDado(id_hash)
             hash_fazenda = hashlib.md5(str(fazenda).encode()).hexdigest()
             if hash_fazenda == dado_hash:
                 fazenda['check_blockchain'] = True

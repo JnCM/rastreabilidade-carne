@@ -13,7 +13,7 @@ def imprimir_qrcodes(request):
             animal["data_nascimento"] = animal["data_nascimento"].strftime("%Y-%m-%d")
             hash_tb = list(models.Hash.objects.filter(id_tabela=2, id_item=str(animal['id_animal'])).values('id_hash_blockchain'))
             id_hash = hash_tb[0]['id_hash_blockchain']
-            dado_hash = blockchain_connect.getDado(settings.CONTRACT, id_hash)
+            dado_hash = blockchain_connect.getDado(id_hash)
             hash_animal = hashlib.md5(str(animal).encode()).hexdigest()
             if hash_animal == dado_hash:
                 animal['check_blockchain'] = True

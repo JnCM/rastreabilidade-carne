@@ -18,7 +18,7 @@ def cadastro_embalagem(request):
             animal["data_nascimento"] = animal["data_nascimento"].strftime("%Y-%m-%d")
             hash_tb = list(models.Hash.objects.filter(id_tabela=2, id_item=str(animal['id_animal'])).values('id_hash_blockchain'))
             id_hash = hash_tb[0]['id_hash_blockchain']
-            dado_hash = blockchain_connect.getDado(settings.CONTRACT, id_hash)
+            dado_hash = blockchain_connect.getDado(id_hash)
             hash_animal = hashlib.md5(str(animal).encode()).hexdigest()
             if hash_animal == dado_hash:
                 animal['check_blockchain'] = True
@@ -125,7 +125,7 @@ def get_embalagem(request, id_embalagem):
         embalagem["data_embalagem"] = embalagem["data_embalagem"].strftime("%Y-%m-%d")
         hash_tb = list(models.Hash.objects.filter(id_tabela=10, id_item=str(embalagem['id_embalagem'])).values('id_hash_blockchain'))
         id_hash = hash_tb[0]['id_hash_blockchain']
-        dado_hash = blockchain_connect.getDado(settings.CONTRACT, id_hash)
+        dado_hash = blockchain_connect.getDado(id_hash)
         hash_embalagem = hashlib.md5(str(embalagem).encode()).hexdigest()
         if hash_embalagem != dado_hash:
             check_blockchain = False
@@ -138,7 +138,7 @@ def get_embalagem(request, id_embalagem):
         animal["data_nascimento"] = animal["data_nascimento"].strftime("%Y-%m-%d")
         hash_tb = list(models.Hash.objects.filter(id_tabela=2, id_item=str(animal['id_animal'])).values('id_hash_blockchain'))
         id_hash = hash_tb[0]['id_hash_blockchain']
-        dado_hash = blockchain_connect.getDado(settings.CONTRACT, id_hash)
+        dado_hash = blockchain_connect.getDado(id_hash)
         hash_animal = hashlib.md5(str(animal).encode()).hexdigest()
         if hash_animal != dado_hash:
             check_blockchain = False
@@ -149,7 +149,7 @@ def get_embalagem(request, id_embalagem):
         fazenda = fazenda[0]
         hash_tb = list(models.Hash.objects.filter(id_tabela=1, id_item=str(fazenda['id_fazenda'])).values('id_hash_blockchain'))
         id_hash = hash_tb[0]['id_hash_blockchain']
-        dado_hash = blockchain_connect.getDado(settings.CONTRACT, id_hash)
+        dado_hash = blockchain_connect.getDado(id_hash)
         hash_fazenda = hashlib.md5(str(fazenda).encode()).hexdigest()
         if hash_fazenda != dado_hash:
             check_blockchain = False
@@ -162,7 +162,7 @@ def get_embalagem(request, id_embalagem):
             terminacao["data_inicio"] = terminacao["data_inicio"].strftime("%Y-%m-%d")
             hash_tb = list(models.Hash.objects.filter(id_tabela=4, id_item=str(terminacao['id_terminacao'])).values('id_hash_blockchain'))
             id_hash = hash_tb[0]['id_hash_blockchain']
-            dado_hash = blockchain_connect.getDado(settings.CONTRACT, id_hash)
+            dado_hash = blockchain_connect.getDado(id_hash)
             hash_terminacao = hashlib.md5(str(terminacao).encode()).hexdigest()
             if hash_terminacao != dado_hash:
                 check_blockchain = False
@@ -176,7 +176,7 @@ def get_embalagem(request, id_embalagem):
             qualidade = qualidade[0]
             hash_tb = list(models.Hash.objects.filter(id_tabela=9, id_item=str(terminacao['id_qualidade'])).values('id_hash_blockchain'))
             id_hash = hash_tb[0]['id_hash_blockchain']
-            dado_hash = blockchain_connect.getDado(settings.CONTRACT, id_hash)
+            dado_hash = blockchain_connect.getDado(id_hash)
             hash_qualidade = hashlib.md5(str(qualidade).encode()).hexdigest()
             if hash_qualidade != dado_hash:
                 check_blockchain = False
@@ -191,7 +191,7 @@ def get_embalagem(request, id_embalagem):
             abate["data_abate"] = abate["data_abate"].strftime("%Y-%m-%d")
             hash_tb = list(models.Hash.objects.filter(id_tabela=8, id_item=str(abate['id_abate'])).values('id_hash_blockchain'))
             id_hash = hash_tb[0]['id_hash_blockchain']
-            dado_hash = blockchain_connect.getDado(settings.CONTRACT, id_hash)
+            dado_hash = blockchain_connect.getDado(id_hash)
             hash_abate = hashlib.md5(str(abate).encode()).hexdigest()
             if hash_abate != dado_hash:
                 check_blockchain = False
@@ -207,7 +207,7 @@ def get_embalagem(request, id_embalagem):
                 vacina["data_aplicacao"] = vacina["data_aplicacao"].strftime("%Y-%m-%d")
                 hash_tb = list(models.Hash.objects.filter(id_tabela=3, id_item=str(vacina['id_vacina'])).values('id_hash_blockchain'))
                 id_hash = hash_tb[0]['id_hash_blockchain']
-                dado_hash = blockchain_connect.getDado(settings.CONTRACT, id_hash)
+                dado_hash = blockchain_connect.getDado(id_hash)
                 hash_vacina = hashlib.md5(str(vacina).encode()).hexdigest()
                 if hash_vacina != dado_hash:
                     check_blockchain = False
@@ -221,7 +221,7 @@ def get_embalagem(request, id_embalagem):
             itemVenda = itemVenda[0]
             hash_tb = list(models.Hash.objects.filter(id_tabela=6, id_item=str(itemVenda['id_item'])).values('id_hash_blockchain'))
             id_hash = hash_tb[0]['id_hash_blockchain']
-            dado_hash = blockchain_connect.getDado(settings.CONTRACT, id_hash)
+            dado_hash = blockchain_connect.getDado(id_hash)
             hash_item_venda = hashlib.md5(str(itemVenda).encode()).hexdigest()
             if hash_item_venda != dado_hash:
                 check_blockchain = False
@@ -236,7 +236,7 @@ def get_embalagem(request, id_embalagem):
             venda["data_venda"] = venda["data_venda"].strftime("%Y-%m-%d")
             hash_tb = list(models.Hash.objects.filter(id_tabela=5, id_item=str(venda['id_venda'])).values('id_hash_blockchain'))
             id_hash = hash_tb[0]['id_hash_blockchain']
-            dado_hash = blockchain_connect.getDado(settings.CONTRACT, id_hash)
+            dado_hash = blockchain_connect.getDado(id_hash)
             hash_venda = hashlib.md5(str(venda).encode()).hexdigest()
             if hash_venda != dado_hash:
                 check_blockchain = False
@@ -250,7 +250,7 @@ def get_embalagem(request, id_embalagem):
             frigorifico = frigorifico[0]
             hash_tb = list(models.Hash.objects.filter(id_tabela=7, id_item=str(frigorifico['id_frigorifico'])).values('id_hash_blockchain'))
             id_hash = hash_tb[0]['id_hash_blockchain']
-            dado_hash = blockchain_connect.getDado(settings.CONTRACT, id_hash)
+            dado_hash = blockchain_connect.getDado(id_hash)
             hash_frigorifico = hashlib.md5(str(frigorifico).encode()).hexdigest()
             if hash_frigorifico != dado_hash:
                 check_blockchain = False
@@ -264,7 +264,7 @@ def get_embalagem(request, id_embalagem):
             comercializacao_embalagem = comercializacao_embalagem[0]
             hash_tb = list(models.Hash.objects.filter(id_tabela=12, id_item=str(comercializacao_embalagem['id_item'])).values('id_hash_blockchain'))
             id_hash = hash_tb[0]['id_hash_blockchain']
-            dado_hash = blockchain_connect.getDado(settings.CONTRACT, id_hash)
+            dado_hash = blockchain_connect.getDado(id_hash)
             hash_com_emb = hashlib.md5(str(comercializacao_embalagem).encode()).hexdigest()
             if hash_com_emb != dado_hash:
                 check_blockchain = False
@@ -276,7 +276,7 @@ def get_embalagem(request, id_embalagem):
             comercializacao["data_venda"] = comercializacao["data_venda"].strftime("%Y-%m-%dT%H:%M")
             hash_tb = list(models.Hash.objects.filter(id_tabela=11, id_item=str(comercializacao['id_comercializacao'])).values('id_hash_blockchain'))
             id_hash = hash_tb[0]['id_hash_blockchain']
-            dado_hash = blockchain_connect.getDado(settings.CONTRACT, id_hash)
+            dado_hash = blockchain_connect.getDado(id_hash)
             hash_com = hashlib.md5(str(comercializacao).encode()).hexdigest()
             if hash_com != dado_hash:
                 check_blockchain = False

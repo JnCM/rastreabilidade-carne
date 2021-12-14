@@ -18,7 +18,7 @@ def cadastro_comercializacao(request):
             embalagem["data_embalagem"] = embalagem["data_embalagem"].strftime("%Y-%m-%d")
             hash_tb = list(models.Hash.objects.filter(id_tabela=10, id_item=str(embalagem['id_embalagem'])).values('id_hash_blockchain'))
             id_hash = hash_tb[0]['id_hash_blockchain']
-            dado_hash = blockchain_connect.getDado(settings.CONTRACT, id_hash)
+            dado_hash = blockchain_connect.getDado(id_hash)
             hash_embalagem = hashlib.md5(str(embalagem).encode()).hexdigest()
             if hash_embalagem == dado_hash:
                 embalagem['check_blockchain'] = True
