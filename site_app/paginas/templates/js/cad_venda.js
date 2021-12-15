@@ -1,5 +1,9 @@
 var camposValidosVenda = false;
 var listaVendas = [];
+var listaItens = [];
+var listaExistentes = [];
+var check = 0;
+var mensagens = [];
 
 $("#salvar").click(function(event) {
     event.preventDefault();
@@ -118,13 +122,10 @@ $(document).ready(function() {
             async: true,
 
             success: function(result) {
-                $(".loader").toggle();
                 result = JSON.parse(result);
                 if (result.resposta == 'OK') {
-                    alert("Venda cadastrada com sucesso!");
-                    location.href = "/";
-                } else if (result.resposta == "VENDA(s) EXISTENTE(s)") {
-                    alert("Animal cadastrado já foi vendido!");
+                    getStatusVenda(result.task_id_venda);
+                    verificaStatusTasks(result.tasks_ids);
                 } else {
                     alert("Erro interno! Tente novamente mais tarde.");
                 }
@@ -143,6 +144,109 @@ $(document).ready(function() {
         event.preventDefault();
     });
 });
+
+function verificaStatusTasks(listaTasks) {
+    listaItens = listaTasks;
+
+    for (let i = 0; i < listaTasks.length; i++) {
+        if (listaTasks[i].task_id != -1) {
+            getStatus(listaTasks[i].task_id);
+        } else {
+            listaExistentes.push(listaTasks[i]);
+        }
+    }
+}
+
+function getStatusVenda(taskID) {
+    $.ajax({
+            url: `/tasks/${taskID}/`,
+            method: 'GET'
+        })
+        .done((res) => {
+            const taskStatus = res.task_status;
+
+            if (taskStatus === 'SUCCESS' || taskStatus === 'FAILURE') {
+                const taskResult = res.task_result;
+                console.log(taskResult);
+                if (taskResult == "OK") {
+                    alert("Venda cadastrada com sucesso!");
+                } else if (taskResult == "ERRO_DADOS") {
+                    alert("Erro no salvamento dos dados da venda!");
+                } else if (taskResult == "ERRO_BLOCKCHAIN") {
+                    alert("Erro ao salvar o dado da venda na blockchain!");
+                } else {
+                    alert("Erro interno durante a tarefa assíncrona da venda!");
+                }
+            } else {
+                setTimeout(function() {
+                    getStatusVenda(res.task_id);
+                }, 1000);
+            }
+        })
+        .fail((err) => {
+            $(".loader").toggle();
+            console.log(err);
+            alert("Erro interno!");
+        });
+}
+
+function getStatus(taskID) {
+    $.ajax({
+            url: `/tasks/${taskID}/`,
+            method: 'GET'
+        })
+        .done((res) => {
+            const taskStatus = res.task_status;
+
+            if (taskStatus === 'SUCCESS' || taskStatus === 'FAILURE') {
+                var mensagem = "";
+                const taskResult = res.task_result;
+                console.log(taskResult);
+                if (taskResult == "OK") {
+                    mensagem = "Animal vendido com sucesso!";
+                } else if (taskResult == "ERRO_DADOS") {
+                    mensagem = "Erro no salvamento dos dados!";
+                } else if (taskResult == "ERRO_BLOCKCHAIN") {
+                    mensagem = "Erro ao salvar o dado na blockchain!";
+                } else {
+                    mensagem = "Erro interno durante a tarefa assíncrona!";
+                }
+                check += 1;
+                for (let i = 0; i < listaItens.length; i++) {
+                    if (res.task_id == listaItens[i].task_id) {
+                        mensagens.push({
+                            "id_item_venda": listaItens[i].id_item_venda,
+                            "mensagem": mensagem
+                        })
+                    }
+                }
+                if (check == listaItens.length - listaExistentes.length) {
+                    $(".loader").toggle();
+                    const quebraLinha = "\r\n";
+                    var msg = "";
+                    for (let i = 0; i < mensagens.length; i++) {
+                        msg += `Animal ${mensagens[i].id_item_venda+1}: ${mensagens[i].mensagem}`;
+                        msg += quebraLinha;
+                    }
+                    for (let i = 0; i < listaExistentes.length; i++) {
+                        msg += `Animal ${listaExistentes[i].id_item_venda+1}: Animal já foi vendido`;
+                        msg += quebraLinha;
+                    }
+                    alert(msg);
+                    location.href = "/";
+                }
+            } else {
+                setTimeout(function() {
+                    getStatus(res.task_id);
+                }, 1000);
+            }
+        })
+        .fail((err) => {
+            $(".loader").toggle();
+            console.log(err);
+            alert("Erro interno!");
+        });
+}
 
 $("#data_venda, #frigorifico").change(function(event) {
     event.preventDefault();

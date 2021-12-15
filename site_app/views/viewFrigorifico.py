@@ -23,6 +23,7 @@ def salvar_frigorifico(request):
         idFrigorifico = proximoIdFrigorifico()
         if not verificaFrigorifico(cnpj):
             msg = "FRIGORIFICO EXISTENTE"
+            task_id = -1
         else:
             novoFrigorifico = models.Frigorifico(
                 id_frigorifico=idFrigorifico,
@@ -33,22 +34,10 @@ def salvar_frigorifico(request):
             )
             json_gen_hash = model_to_dict(novoFrigorifico)
             valor_hash = hashlib.md5(str(json_gen_hash).encode())
-            task = blockchain_connect.setDado.delay(valor_hash.hexdigest())
-            id_blockchain = task.get()
-            if id_blockchain != -1:
-                id_hash = utils.proxIdHash()
-                novoItem = models.Hash(
-                    id_hash=id_hash,
-                    id_tabela=7,
-                    id_item=str(idFrigorifico),
-                    id_hash_blockchain=id_blockchain
-                )
-                novoItem.save(force_insert=True)
-                novoFrigorifico.save(force_insert=True)
-                msg = "OK"
-            else:
-                msg = "ERRO"
-    return HttpResponse(json.dumps({'resposta': msg}))
+            task = blockchain_connect.setDado.delay(valor_hash.hexdigest(), json_gen_hash, 7)
+            task_id = task.id
+            msg = "OK"
+    return HttpResponse(json.dumps({'resposta': msg, "task_id": task_id}))
 
 
 def proximoIdFrigorifico():

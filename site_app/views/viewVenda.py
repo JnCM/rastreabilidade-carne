@@ -52,57 +52,38 @@ def salvar_venda(request):
         )
         json_gen_hash = model_to_dict(novaVenda)
         valor_hash = hashlib.md5(str(json_gen_hash).encode())
-        task = blockchain_connect.setDado.delay(valor_hash.hexdigest())
-        id_blockchain = task.get()
-        if id_blockchain != -1:
-            id_hash = utils.proxIdHash()
-            novoItem = models.Hash(
-                id_hash=id_hash,
-                id_tabela=5,
-                id_item=str(idVenda),
-                id_hash_blockchain=id_blockchain
-            )
-            novoItem.save(force_insert=True)
-            novaVenda.save(force_insert=True)
-            msg = "OK"
-
-            for item in listaVendas:
-                if not verificaVendaAnimal(item['animal']):
-                    msg = "VENDA(s) EXISTENTE(s)"
-                    break
-                else:
+        task = blockchain_connect.setDado.delay(valor_hash.hexdigest(), json_gen_hash, 5)
+        task_id_venda = task.id
+        i = 0
+        j = 0
+        tasks_ids = []
+        for item in listaVendas:
+            if not verificaVendaAnimal(item['animal']):
+                msg = "VENDA(s) EXISTENTE(s)"
+                tasks_ids.append({"resposta": msg, "id_item_venda": i, "task_id": -1})
+            else:
+                if j == 0:
                     idItem = proximoIdItem()
-                    novoItemVenda = models.VendaAnimal(
-                        id_item=idItem,
-                        id_venda=idVenda,
-                        peso_final=float(item['peso_final']),
-                        itu_min=float(item['itu_min']),
-                        itu_medio=float(item['itu_medio']),
-                        itu_max=float(item['itu_max']),
-                        id_animal=item['animal']
-                    )
-                    json_gen_hash = model_to_dict(novoItemVenda)
-                    valor_hash = hashlib.md5(str(json_gen_hash).encode())
-                    task = blockchain_connect.setDado.delay(valor_hash.hexdigest())
-                    id_blockchain = task.get()
-                    if id_blockchain != -1:
-                        id_hash = utils.proxIdHash()
-                        novoItem = models.Hash(
-                            id_hash=id_hash,
-                            id_tabela=6,
-                            id_item=str(idItem),
-                            id_hash_blockchain=id_blockchain
-                        )
-                        novoItem.save(force_insert=True)
-                        novoItemVenda.save(force_insert=True)
-                        msg = "OK"
-                    else:
-                        msg = "ERRO"
-                        break
-        else:
-            msg = "ERRO"
+                else:
+                    idItem += 1
+                novoItemVenda = models.VendaAnimal(
+                    id_item=idItem,
+                    id_venda=idVenda,
+                    peso_final=float(item['peso_final']),
+                    itu_min=float(item['itu_min']),
+                    itu_medio=float(item['itu_medio']),
+                    itu_max=float(item['itu_max']),
+                    id_animal=item['animal']
+                )
+                json_gen_hash = model_to_dict(novoItemVenda)
+                valor_hash = hashlib.md5(str(json_gen_hash).encode())
+                task = blockchain_connect.setDado.delay(valor_hash.hexdigest(), json_gen_hash, 6)
+                msg = "OK"
+                tasks_ids.append({"resposta": msg, "id_item_venda": i, "task_id": task.id})
+                j += 1
+            i += 1
         
-    return HttpResponse(json.dumps({'resposta': msg}))
+    return HttpResponse(json.dumps({"resposta": "OK", "task_id_venda": task_id_venda, "tasks_ids": tasks_ids}))
 
 
 def proximoIdVenda():

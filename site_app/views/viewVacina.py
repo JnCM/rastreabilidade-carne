@@ -28,12 +28,18 @@ def salvar_vacina(request):
     if request.method == "POST":
         idAnimal = request.POST.get("animal")
         listaVacinas = json.loads(request.POST.get("lista_vacinas"))
+        i = 0
+        j = 0
+        tasks_ids = []
         for vacina in listaVacinas:
             if not verificaVacina(idAnimal, vacina):
                 msg = "VACINA(s) EXISTENTE(s)"
-                break
+                tasks_ids.append({"resposta": msg, "id_vacina": i, "task_id": -1})
             else:
-                idVacina = proximoIdVacina()
+                if j == 0:
+                    idVacina = proximoIdVacina()
+                else:
+                    idVacina += 1
                 novaVacina = models.Vacina(
                     id_vacina=idVacina,
                     especificidade=vacina['especificidade'],
@@ -44,23 +50,13 @@ def salvar_vacina(request):
                 )
                 json_gen_hash = model_to_dict(novaVacina)
                 valor_hash = hashlib.md5(str(json_gen_hash).encode())
-                task = blockchain_connect.setDado.delay(valor_hash.hexdigest())
-                id_blockchain = task.get()
-                if id_blockchain != -1:
-                    id_hash = utils.proxIdHash()
-                    novoItem = models.Hash(
-                        id_hash=id_hash,
-                        id_tabela=3,
-                        id_item=str(idVacina),
-                        id_hash_blockchain=id_blockchain
-                    )
-                    novoItem.save(force_insert=True)
-                    novaVacina.save(force_insert=True)
-                    msg = "OK"
-                else:
-                    msg = "ERRO"
-                    break
-    return HttpResponse(json.dumps({'resposta': msg}))
+                task = blockchain_connect.setDado.delay(valor_hash.hexdigest(), json_gen_hash, 3)
+                msg = "OK"
+                tasks_ids.append({"resposta": msg, "id_vacina": i, "task_id": task.id})
+                j += 1
+            i += 1
+                
+    return HttpResponse(json.dumps({"resposta": "OK", "tasks_ids": tasks_ids}))
 
 
 def proximoIdVacina():

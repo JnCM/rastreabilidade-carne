@@ -41,51 +41,33 @@ def salvar_comercializacao(request):
         )
         json_gen_hash = model_to_dict(novaComercializacao)
         valor_hash = hashlib.md5(str(json_gen_hash).encode())
-        task = blockchain_connect.setDado.delay(valor_hash.hexdigest())
-        id_blockchain = task.get()
-        if id_blockchain != -1:
-            id_hash = utils.proxIdHash()
-            novoItem = models.Hash(
-                id_hash=id_hash,
-                id_tabela=11,
-                id_item=str(idComercializacao),
-                id_hash_blockchain=id_blockchain
-            )
-            novoItem.save(force_insert=True)
-            novaComercializacao.save(force_insert=True)
-
-            for idEmbalagem in listaEmbalagens:
-                idItem = proximoIdItemComercializacao()
-                if not verificaEmbalagem(idEmbalagem):
-                    msg = "COMERCIALIZACAO EXISTENTE"
-                    break
+        task = blockchain_connect.setDado.delay(valor_hash.hexdigest(), json_gen_hash, 11)
+        task_id_comercializacao = task.id
+        i = 0
+        j = 0
+        tasks_ids = []
+        for idEmbalagem in listaEmbalagens:
+            if not verificaEmbalagem(idEmbalagem):
+                msg = "COMERCIALIZACAO EXISTENTE"
+                tasks_ids.append({"resposta": msg, "id_embalagem": i, "task_id": -1})
+            else:
+                if j == 0:
+                    idItem = proximoIdItemComercializacao()
                 else:
-                    novaComercializacaoEmbalagem = models.ComercializacaoEmbalagem(
-                        id_item=idItem,
-                        id_embalagem=int(idEmbalagem),
-                        id_comercializacao=idComercializacao
-                    )
-                    json_gen_hash = model_to_dict(novaComercializacaoEmbalagem)
-                    valor_hash = hashlib.md5(str(json_gen_hash).encode())
-                    task = blockchain_connect.setDado.delay(valor_hash.hexdigest())
-                    id_blockchain = task.get()
-                    if id_blockchain != -1:
-                        id_hash = utils.proxIdHash()
-                        novoItem = models.Hash(
-                            id_hash=id_hash,
-                            id_tabela=12,
-                            id_item=str(idItem),
-                            id_hash_blockchain=id_blockchain
-                        )
-                        novoItem.save(force_insert=True)
-                        novaComercializacaoEmbalagem.save(force_insert=True)
-                        msg = "OK"
-                    else:
-                        msg = "ERRO"
-                        break
-        else:
-            msg = "ERRO"
-    return HttpResponse(json.dumps({'resposta': msg}))
+                    idItem += 1
+                novaComercializacaoEmbalagem = models.ComercializacaoEmbalagem(
+                    id_item=idItem,
+                    id_embalagem=int(idEmbalagem),
+                    id_comercializacao=idComercializacao
+                )
+                json_gen_hash = model_to_dict(novaComercializacaoEmbalagem)
+                valor_hash = hashlib.md5(str(json_gen_hash).encode())
+                task = blockchain_connect.setDado.delay(valor_hash.hexdigest(), json_gen_hash, 12)
+                msg = "OK"
+                tasks_ids.append({"resposta": msg, "id_embalagem": i, "task_id": task.id})
+                j += 1
+            i += 1
+    return HttpResponse(json.dumps({"resposta": "OK", "task_id_comercializacao": task_id_comercializacao, "tasks_ids": tasks_ids}))
 
 
 def proximoIdComercializacao():

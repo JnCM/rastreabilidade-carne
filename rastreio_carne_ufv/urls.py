@@ -16,13 +16,14 @@ Including another URLconf
 from django.urls import re_path
 from django.contrib import admin
 from site_app.views import (viewHome, viewFazenda, viewAnimal, viewVacina, viewTerminacao, viewVenda, viewQrcode,
-                      viewFrigorifico, viewEmbalagem, viewAbate, viewQualidade, viewComercializacao, viewLogin)
+                      viewFrigorifico, viewEmbalagem, viewAbate, viewQualidade, viewComercializacao, viewLogin, viewTask)
 
 urlpatterns = [
     re_path(r'^login$', viewLogin.login, name='login'),
     re_path(r'^autenticar$', viewLogin.autenticar, name='autenticar'),
     re_path(r'^logout$', viewLogin.logout, name='logout'),
     re_path(r'^$', viewHome.index, name='index'),
+    re_path(r'^tasks/(?P<task_id>[\w-]+)/$', viewTask.get_status, name="get_status"),
     re_path(r'^cadastro_fazenda$', viewFazenda.cadastro_fazenda, name='cadastro_fazenda'),
     re_path(r'^salvar_fazenda$', viewFazenda.salvar_fazenda, name='salvar_fazenda'),
     re_path(r'^cadastro_animal$', viewAnimal.cadastro_animal, name='cadastro_animal'),

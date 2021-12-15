@@ -1,5 +1,9 @@
 var camposValidosComercializacao = false;
 var listaEmbalagens = [];
+var listaEmbs = [];
+var listaExistentes = [];
+var check = 0;
+var mensagens = [];
 
 $("#salvar").click(function(event) {
     event.preventDefault();
@@ -101,13 +105,10 @@ $(document).ready(function() {
             async: true,
 
             success: function(result) {
-                $(".loader").toggle();
                 result = JSON.parse(result);
                 if (result.resposta == 'OK') {
-                    alert("Comercialização cadastrada com sucesso!");
-                    location.href = "/";
-                } else if (result.resposta == "COMERCIALIZACAO EXISTENTE") {
-                    alert("Embalagem já foi vendida!");
+                    getStatusComercializacao(result.task_id_comercializacao);
+                    verificaStatusTasks(result.tasks_ids);
                 } else {
                     alert("Erro interno! Tente novamente mais tarde.");
                 }
@@ -126,6 +127,109 @@ $(document).ready(function() {
         event.preventDefault();
     });
 });
+
+function verificaStatusTasks(listaTasks) {
+    listaEmbs = listaTasks;
+
+    for (let i = 0; i < listaTasks.length; i++) {
+        if (listaTasks[i].task_id != -1) {
+            getStatus(listaTasks[i].task_id);
+        } else {
+            listaExistentes.push(listaTasks[i]);
+        }
+    }
+}
+
+function getStatusComercializacao(taskID) {
+    $.ajax({
+            url: `/tasks/${taskID}/`,
+            method: 'GET'
+        })
+        .done((res) => {
+            const taskStatus = res.task_status;
+
+            if (taskStatus === 'SUCCESS' || taskStatus === 'FAILURE') {
+                const taskResult = res.task_result;
+                console.log(taskResult);
+                if (taskResult == "OK") {
+                    alert("Comercialização cadastrada com sucesso!");
+                } else if (taskResult == "ERRO_DADOS") {
+                    alert("Erro no salvamento dos dados da comercialização!");
+                } else if (taskResult == "ERRO_BLOCKCHAIN") {
+                    alert("Erro ao salvar o dado da comercialização na blockchain!");
+                } else {
+                    alert("Erro interno durante a tarefa assíncrona da comercialização!");
+                }
+            } else {
+                setTimeout(function() {
+                    getStatusComercializacao(res.task_id);
+                }, 1000);
+            }
+        })
+        .fail((err) => {
+            $(".loader").toggle();
+            console.log(err);
+            alert("Erro interno!");
+        });
+}
+
+function getStatus(taskID) {
+    $.ajax({
+            url: `/tasks/${taskID}/`,
+            method: 'GET'
+        })
+        .done((res) => {
+            const taskStatus = res.task_status;
+
+            if (taskStatus === 'SUCCESS' || taskStatus === 'FAILURE') {
+                var mensagem = "";
+                const taskResult = res.task_result;
+                console.log(taskResult);
+                if (taskResult == "OK") {
+                    mensagem = "Embalagem vendida com sucesso!";
+                } else if (taskResult == "ERRO_DADOS") {
+                    mensagem = "Erro no salvamento dos dados!";
+                } else if (taskResult == "ERRO_BLOCKCHAIN") {
+                    mensagem = "Erro ao salvar o dado na blockchain!";
+                } else {
+                    mensagem = "Erro interno durante a tarefa assíncrona!";
+                }
+                check += 1;
+                for (let i = 0; i < listaEmbs.length; i++) {
+                    if (res.task_id == listaEmbs[i].task_id) {
+                        mensagens.push({
+                            "id_embalagem": listaEmbs[i].id_embalagem,
+                            "mensagem": mensagem
+                        })
+                    }
+                }
+                if (check == listaEmbs.length - listaExistentes.length) {
+                    $(".loader").toggle();
+                    const quebraLinha = "\r\n";
+                    var msg = "";
+                    for (let i = 0; i < mensagens.length; i++) {
+                        msg += `Embalagem ${mensagens[i].id_embalagem+1}: ${mensagens[i].mensagem}`;
+                        msg += quebraLinha;
+                    }
+                    for (let i = 0; i < listaExistentes.length; i++) {
+                        msg += `Embalagem ${listaExistentes[i].id_embalagem+1}: Embalagem já foi vendida`;
+                        msg += quebraLinha;
+                    }
+                    alert(msg);
+                    location.href = "/";
+                }
+            } else {
+                setTimeout(function() {
+                    getStatus(res.task_id);
+                }, 1000);
+            }
+        })
+        .fail((err) => {
+            $(".loader").toggle();
+            console.log(err);
+            alert("Erro interno!");
+        });
+}
 
 window.addEventListener("load", function() {
     var now = new Date();

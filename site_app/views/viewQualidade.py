@@ -42,6 +42,7 @@ def salvar_qualidade(request):
         idQualidade = proximoIdQualidade()
         if not verificaQualidade(idAnimal):
             msg = "QUALIDADE EXISTENTE"
+            task_id = -1
         else:
             novaQualidade = models.Qualidade(
                 id_qualidade=idQualidade,
@@ -59,22 +60,10 @@ def salvar_qualidade(request):
             )
             json_gen_hash = model_to_dict(novaQualidade)
             valor_hash = hashlib.md5(str(json_gen_hash).encode())
-            task = blockchain_connect.setDado.delay(valor_hash.hexdigest())
-            id_blockchain = task.get()
-            if id_blockchain != -1:
-                id_hash = utils.proxIdHash()
-                novoItem = models.Hash(
-                    id_hash=id_hash,
-                    id_tabela=9,
-                    id_item=str(idQualidade),
-                    id_hash_blockchain=id_blockchain
-                )
-                novoItem.save(force_insert=True)
-                novaQualidade.save(force_insert=True)
-                msg = "OK"
-            else:
-                msg = "ERRO"
-    return HttpResponse(json.dumps({'resposta': msg}))
+            task = blockchain_connect.setDado.delay(valor_hash.hexdigest(), json_gen_hash, 9)
+            task_id = task.id              
+            msg = "OK"
+    return HttpResponse(json.dumps({'resposta': msg, "task_id": task_id}))
 
 
 def proximoIdQualidade():

@@ -37,6 +37,7 @@ def salvar_terminacao(request):
         idTerminacao = proximoIdTerminacao()
         if not verificaTerminacao(idAnimal):
             msg = "TERMINACAO EXISTENTE"
+            task_id = -1
         else:
             novaTerminacao = models.Terminacao(
                 id_terminacao=idTerminacao,
@@ -49,22 +50,10 @@ def salvar_terminacao(request):
             )
             json_gen_hash = model_to_dict(novaTerminacao)
             valor_hash = hashlib.md5(str(json_gen_hash).encode())
-            task = blockchain_connect.setDado.delay(valor_hash.hexdigest())
-            id_blockchain = task.get()
-            if id_blockchain != -1:
-                id_hash = utils.proxIdHash()
-                novoItem = models.Hash(
-                    id_hash=id_hash,
-                    id_tabela=4,
-                    id_item=str(idTerminacao),
-                    id_hash_blockchain=id_blockchain
-                )
-                novoItem.save(force_insert=True)
-                novaTerminacao.save(force_insert=True)
-                msg = "OK"
-            else:
-                msg = "ERRO"
-    return HttpResponse(json.dumps({'resposta': msg}))
+            task = blockchain_connect.setDado.delay(valor_hash.hexdigest(), json_gen_hash, 4)
+            msg = "OK"
+            task_id = task.id
+    return HttpResponse(json.dumps({'resposta': msg, "task_id": task_id}))
 
 
 def proximoIdTerminacao():

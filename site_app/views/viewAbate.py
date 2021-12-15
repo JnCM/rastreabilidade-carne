@@ -40,6 +40,7 @@ def salvar_abate(request):
         idAbate = proximoIdAbate()
         if not verificaAbate(idAnimal):
             msg = "ABATE EXISTENTE"
+            task_id = -1
         else:
             novoAbate = models.Abate(
                 id_abate=idAbate,
@@ -55,22 +56,10 @@ def salvar_abate(request):
             )
             json_gen_hash = model_to_dict(novoAbate)
             valor_hash = hashlib.md5(str(json_gen_hash).encode())
-            task = blockchain_connect.setDado.delay(valor_hash.hexdigest())
-            id_blockchain = task.get()
-            if id_blockchain != -1:
-                id_hash = utils.proxIdHash()
-                novoItem = models.Hash(
-                    id_hash=id_hash,
-                    id_tabela=8,
-                    id_item=str(idAbate),
-                    id_hash_blockchain=id_blockchain
-                )
-                novoItem.save(force_insert=True)
-                novoAbate.save(force_insert=True)
-                msg = "OK"
-            else:
-                msg = "ERRO"
-    return HttpResponse(json.dumps({'resposta': msg}))
+            task = blockchain_connect.setDado.delay(valor_hash.hexdigest(), json_gen_hash, 8)
+            task_id = task.id 
+            msg = "OK"
+    return HttpResponse(json.dumps({'resposta': msg, "task_id": task_id}))
 
 
 def proximoIdAbate():

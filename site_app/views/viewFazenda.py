@@ -2,7 +2,6 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 import json
 from site_app.dao import models
-from site_app.utils import utils
 from django.db.models import Max
 from rastreio_carne_ufv import blockchain_connect
 import hashlib
@@ -22,6 +21,7 @@ def salvar_fazenda(request):
         idFazenda = proximoIdFazenda()
         if not verificaFazenda(nomeFazenda):
             msg = "FAZENDA EXISTENTE"
+            task_id = -1
         else:
             novaFazenda = models.Fazenda(
                 id_fazenda=idFazenda,
@@ -31,22 +31,10 @@ def salvar_fazenda(request):
             )
             json_gen_hash = model_to_dict(novaFazenda)
             valor_hash = hashlib.md5(str(json_gen_hash).encode())
-            task = blockchain_connect.setDado.delay(valor_hash.hexdigest())
-            id_blockchain = task.get()
-            if id_blockchain != -1:
-                id_hash = utils.proxIdHash()
-                novoItem = models.Hash(
-                    id_hash=id_hash,
-                    id_tabela=1,
-                    id_item=str(idFazenda),
-                    id_hash_blockchain=id_blockchain
-                )
-                novoItem.save(force_insert=True)
-                novaFazenda.save(force_insert=True)
-                msg = "OK"
-            else:
-                msg = "ERRO"
-    return HttpResponse(json.dumps({'resposta': msg}))
+            task = blockchain_connect.setDado.delay(valor_hash.hexdigest(), json_gen_hash, 1)
+            msg = "OK"
+            task_id = task.id
+    return HttpResponse(json.dumps({'resposta': msg, 'task_id': task_id}))
 
 
 def proximoIdFazenda():

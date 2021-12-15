@@ -1,5 +1,9 @@
 var camposValidosVacina = false;
 var listaVacinas = [];
+var listaVacs = [];
+var listaExistentes = [];
+var check = 0;
+var mensagens = [];
 
 $("#salvar").click(function(event) {
     event.preventDefault();
@@ -120,14 +124,11 @@ $(document).ready(function() {
             async: true,
 
             success: function(result) {
-                $(".loader").toggle();
                 result = JSON.parse(result);
                 if (result.resposta == 'OK') {
-                    alert("Vacina(s) cadastrada(s) com sucesso!");
-                    location.href = "/";
-                } else if (result.resposta == "VACINA(s) EXISTENTE(s)") {
-                    alert("Existem vacinas adicionadas já cadastradas!");
+                    verificaStatusTasks(result.tasks_ids);
                 } else {
+                    $(".loader").toggle();
                     alert("Erro interno! Tente novamente mais tarde.");
                 }
             },
@@ -145,3 +146,73 @@ $(document).ready(function() {
         event.preventDefault();
     });
 });
+
+function verificaStatusTasks(listaTasks) {
+    listaVacs = listaTasks;
+
+    for (let i = 0; i < listaTasks.length; i++) {
+        if (listaTasks[i].task_id != -1) {
+            getStatus(listaTasks[i].task_id);
+        } else {
+            listaExistentes.push(listaTasks[i]);
+        }
+    }
+}
+
+function getStatus(taskID) {
+    $.ajax({
+            url: `/tasks/${taskID}/`,
+            method: 'GET'
+        })
+        .done((res) => {
+            const taskStatus = res.task_status;
+
+            if (taskStatus === 'SUCCESS' || taskStatus === 'FAILURE') {
+                var mensagem = "";
+                const taskResult = res.task_result;
+                console.log(taskResult);
+                if (taskResult == "OK") {
+                    mensagem = "Vacina cadastrada com sucesso!";
+                } else if (taskResult == "ERRO_DADOS") {
+                    mensagem = "Erro no salvamento dos dados!";
+                } else if (taskResult == "ERRO_BLOCKCHAIN") {
+                    mensagem = "Erro ao salvar o dado na blockchain!";
+                } else {
+                    mensagem = "Erro interno durante a tarefa assíncrona!";
+                }
+                check += 1;
+                for (let i = 0; i < listaVacs.length; i++) {
+                    if (res.task_id == listaVacs[i].task_id) {
+                        mensagens.push({
+                            "id_vacina": listaVacs[i].id_vacina,
+                            "mensagem": mensagem
+                        })
+                    }
+                }
+                if (check == listaVacs.length - listaExistentes.length) {
+                    $(".loader").toggle();
+                    const quebraLinha = "\r\n";
+                    var msg = "";
+                    for (let i = 0; i < mensagens.length; i++) {
+                        msg += `Vacina ${mensagens[i].id_vacina+1}: ${mensagens[i].mensagem}`;
+                        msg += quebraLinha;
+                    }
+                    for (let i = 0; i < listaExistentes.length; i++) {
+                        msg += `Vacina ${listaExistentes[i].id_vacina+1}: Vacina já cadastrada para esse animal`;
+                        msg += quebraLinha;
+                    }
+                    alert(msg);
+                    location.href = "/";
+                }
+            } else {
+                setTimeout(function() {
+                    getStatus(res.task_id);
+                }, 1000);
+            }
+        })
+        .fail((err) => {
+            $(".loader").toggle();
+            console.log(err);
+            alert("Erro interno!");
+        });
+}

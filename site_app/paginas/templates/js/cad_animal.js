@@ -48,11 +48,9 @@ $(document).ready(function() {
             async: true,
 
             success: function(result) {
-                $(".loader").toggle();
                 result = JSON.parse(result);
                 if (result.resposta == 'OK') {
-                    alert("Animal cadastrado com sucesso!");
-                    location.href = "/";
+                    getStatus(result.task_id);
                 } else if (result.resposta == "ANIMAL EXISTENTE") {
                     alert("Animal já cadastrado!");
                 } else {
@@ -73,3 +71,38 @@ $(document).ready(function() {
         event.preventDefault();
     });
 });
+
+function getStatus(taskID) {
+    $.ajax({
+            url: `/tasks/${taskID}/`,
+            method: 'GET'
+        })
+        .done((res) => {
+            const taskStatus = res.task_status;
+
+            if (taskStatus === 'SUCCESS' || taskStatus === 'FAILURE') {
+                $(".loader").toggle();
+                const taskResult = res.task_result;
+                console.log(taskResult);
+                if (taskResult == "OK") {
+                    alert("Animal cadastrado com sucesso!");
+                    location.href = "/";
+                } else if (taskResult == "ERRO_DADOS") {
+                    alert("Erro no salvamento dos dados!");
+                } else if (taskResult == "ERRO_BLOCKCHAIN") {
+                    alert("Erro ao salvar o dado na blockchain!");
+                } else {
+                    alert("Erro interno durante a tarefa assíncrona!");
+                }
+            } else {
+                setTimeout(function() {
+                    getStatus(res.task_id);
+                }, 1000);
+            }
+        })
+        .fail((err) => {
+            $(".loader").toggle();
+            console.log(err);
+            alert("Erro interno!");
+        });
+}
