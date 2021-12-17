@@ -84,16 +84,19 @@ def get_embalagem(request, id_embalagem):
         check_blockchain = True
 
         embalagem = embalagem[0]
-        save_data = embalagem["data_embalagem"]
-        embalagem["data_embalagem"] = embalagem["data_embalagem"].strftime("%Y-%m-%d")
-        hash_tb = list(models.Hash.objects.filter(id_tabela=10, id_item=str(embalagem['id_embalagem'])).values('id_hash_blockchain'))
-        id_hash = hash_tb[0]['id_hash_blockchain']
-        dado_hash = blockchain_connect.getDado(id_hash)
-        hash_embalagem = hashlib.md5(str(embalagem).encode()).hexdigest()
-        if hash_embalagem != dado_hash:
-            check_blockchain = False
-            print("Erro na embalagem")
-        embalagem["data_embalagem"] = save_data
+        try:
+            save_data = embalagem["data_embalagem"]
+            embalagem["data_embalagem"] = embalagem["data_embalagem"].strftime("%Y-%m-%d")
+            hash_tb = list(models.Hash.objects.filter(id_tabela=10, id_item=str(embalagem['id_embalagem'])).values('id_hash_blockchain'))
+            id_hash = hash_tb[0]['id_hash_blockchain']
+            dado_hash = blockchain_connect.getDado(id_hash)
+            hash_embalagem = hashlib.md5(str(embalagem).encode()).hexdigest()
+            if hash_embalagem != dado_hash:
+                check_blockchain = False
+                print("Erro na embalagem")
+            embalagem["data_embalagem"] = save_data
+        except:
+            pass
 
         animal = list(models.Animal.objects.filter(id_animal=embalagem["id_animal"]).values())
         animal = animal[0]
