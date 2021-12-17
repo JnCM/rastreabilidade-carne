@@ -95,8 +95,9 @@ def get_embalagem(request, id_embalagem):
                 check_blockchain = False
                 print("Erro na embalagem")
             embalagem["data_embalagem"] = save_data
-        except:
-            pass
+        except Exception as e:
+            print(e)
+            check_blockchain = True
 
         animal = list(models.Animal.objects.filter(id_animal=embalagem["id_animal"]).values())
         animal = animal[0]
@@ -281,5 +282,6 @@ def get_embalagem(request, id_embalagem):
                 'temperatura_media': tempMedia,
                 'valido_blockchain': check_blockchain
             })
-    except:
+    except Exception as e:
+        print(e)
         return render(request, 'info_carne.html', {'mensagem': 'ERRO'})
