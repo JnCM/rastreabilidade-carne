@@ -84,9 +84,9 @@ def get_embalagem(request, id_embalagem):
         check_blockchain = True
 
         embalagem = embalagem[0]
+        save_data = embalagem["data_embalagem"]
+        embalagem["data_embalagem"] = embalagem["data_embalagem"].strftime("%Y-%m-%d")
         try:
-            save_data = embalagem["data_embalagem"]
-            embalagem["data_embalagem"] = embalagem["data_embalagem"].strftime("%Y-%m-%d")
             hash_tb = list(models.Hash.objects.filter(id_tabela=10, id_item=str(embalagem['id_embalagem'])).values('id_hash_blockchain'))
             id_hash = hash_tb[0]['id_hash_blockchain']
             dado_hash = blockchain_connect.getDado(id_hash)
@@ -94,10 +94,10 @@ def get_embalagem(request, id_embalagem):
             if hash_embalagem != dado_hash:
                 check_blockchain = False
                 print("Erro na embalagem")
-            embalagem["data_embalagem"] = save_data
         except Exception as e:
             print(e)
             check_blockchain = True
+        embalagem["data_embalagem"] = save_data
 
         animal = list(models.Animal.objects.filter(id_animal=embalagem["id_animal"]).values())
         animal = animal[0]
